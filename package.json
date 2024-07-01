@@ -1,0 +1,25 @@
+{
+  "name": "gyroballteam3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnpeterprogramming/GyroBallTeam3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/johnpeterprogramming/GyroBallTeam3/issues"
+  },
+  "homepage": "https://github.com/johnpeterprogramming/GyroBallTeam3#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "socket.io": "^4.7.5"
+  }
+}
