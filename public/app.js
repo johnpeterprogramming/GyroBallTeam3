@@ -7,10 +7,10 @@ window.addEventListener("load", function () {
     window.addEventListener('deviceorientation', handleOrientation);
 
     function handleOrientation(event) {
-        const y = event.beta;
-        const z = event.gamma;
-        y.innerText = Math.round(y);
-        z.innerText = Math.round(z);
+        const y_val = event.beta;
+        const z_val = event.gamma;
+        y.innerText = Math.round(y_val);
+        z.innerText = Math.round(z_val);
 }
 
 });
