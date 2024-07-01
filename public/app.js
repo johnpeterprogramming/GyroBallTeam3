@@ -1,5 +1,5 @@
 window.addEventListener("load", function () {
-    document.body.style.background = 'blue';
+    document.body.style.background = 'light-blue';
 
     var x = document.getElementById("x");
     var y = document.getElementById("y");
