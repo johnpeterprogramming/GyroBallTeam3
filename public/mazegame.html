@@ -120,24 +120,69 @@
       ctx.fill();
     }
 
-    // Function to update ball position based on arrow key press
-    function moveBall(key) {
-      switch (key) {
-        case 'ArrowUp':
-          if (ballY > 0) ballY--;
-          break;
-        case 'ArrowDown':
-          if (ballY < rows - 1) ballY++;
-          break;
-        case 'ArrowLeft':
-          if (ballX > 0) ballX--;
-          break;
-        case 'ArrowRight':
-          if (ballX < cols - 1) ballX++;
-          break;
-      }
-      drawMaze(maze);
+// Function to update ball position based on arrow keys
+function moveBall(key) {
+  let nextX = ballX;
+  let nextY = ballY;
+
+  // get key input
+  switch (key) {
+    case 'ArrowUp':
+      nextY--;
+      break;
+    case 'ArrowDown':
+      nextY++;
+      break;
+    case 'ArrowLeft':
+      nextX--;
+      break;
+    case 'ArrowRight':
+      nextX++;
+      break;
+  }
+
+  // bound checking
+  if (nextX >= 0 && nextX < cols && nextY >= 0 && nextY < rows) {
+    let currentCell = maze[ballY][ballX];
+    let nextCell = maze[nextY][nextX];
+
+    let moveDirection = '';
+    if (nextX === ballX && nextY < ballY) {
+      moveDirection = 'north';
+    } else if (nextX === ballX && nextY > ballY) {
+      moveDirection = 'south';
+    } else if (nextY === ballY && nextX < ballX) {
+      moveDirection = 'west';
+    } else if (nextY === ballY && nextX > ballX) {
+      moveDirection = 'east';
     }
+
+    // check for collision
+    if (!currentCell[moveDirection] && !nextCell[getOppositeDirection(moveDirection)]) {
+      ballX = nextX;
+      ballY = nextY;
+    }
+  }
+
+  drawMaze(maze);
+}
+
+    // Helper function to get opposite direction
+    function getOppositeDirection(direction) {
+        switch (direction) {
+            case 'north':
+            return 'south';
+            case 'south':
+            return 'north';
+            case 'west':
+            return 'east';
+            case 'east':
+            return 'west';
+            default:
+            return '';
+        }
+    }
+
 
     // Event listener for arrow key presses
     document.addEventListener('keydown', (event) => {
