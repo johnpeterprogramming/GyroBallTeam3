@@ -21,10 +21,14 @@
     let maze = createMaze(rows, cols);
 
     // Ball variables
-    let ballX = 0;
-    let ballY = 0;
-    const ballSize = 10;
-    const ballSpeed = 5;
+    let ballX = 0.5;
+    let ballY = 0.5;
+    let ballVelX = 0;
+    let ballVelY = 0;
+    const ballSize = 5; // Radius of the ball
+    const acceleration = 0.005;
+    const maxSpeed = 0.25;
+    const friction = 0.95;
 
     function createMaze(rows, cols) {
       // create maze grid and potential edges
@@ -116,80 +120,78 @@
       // Draw the ball
       ctx.fillStyle = 'red';
       ctx.beginPath();
-      ctx.arc(ballX * cellSize + cellSize / 2, ballY * cellSize + cellSize / 2, ballSize, 0, Math.PI * 2);
+      ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
       ctx.fill();
     }
 
-// Function to update ball position based on arrow keys
-function moveBall(key) {
-  let nextX = ballX;
-  let nextY = ballY;
+    // Function to update ball position based on velocity
+    function updateBallPosition() {
+      let newBallX = ballX + ballVelX;
+      let newBallY = ballY + ballVelY;
 
-  // get key input
-  switch (key) {
-    case 'ArrowUp':
-      nextY--;
-      break;
-    case 'ArrowDown':
-      nextY++;
-      break;
-    case 'ArrowLeft':
-      nextX--;
-      break;
-    case 'ArrowRight':
-      nextX++;
-      break;
-  }
+      // Check for collisions with walls
+      let currentCellX = Math.floor(ballX);
+      let currentCellY = Math.floor(ballY);
+      let nextCellX = Math.floor(newBallX);
+      let nextCellY = Math.floor(newBallY);
 
-  // bound checking
-  if (nextX >= 0 && nextX < cols && nextY >= 0 && nextY < rows) {
-    let currentCell = maze[ballY][ballX];
-    let nextCell = maze[nextY][nextX];
-
-    let moveDirection = '';
-    if (nextX === ballX && nextY < ballY) {
-      moveDirection = 'north';
-    } else if (nextX === ballX && nextY > ballY) {
-      moveDirection = 'south';
-    } else if (nextY === ballY && nextX < ballX) {
-      moveDirection = 'west';
-    } else if (nextY === ballY && nextX > ballX) {
-      moveDirection = 'east';
-    }
-
-    // check for collision
-    if (!currentCell[moveDirection] && !nextCell[getOppositeDirection(moveDirection)]) {
-      ballX = nextX;
-      ballY = nextY;
-    }
-  }
-
-  drawMaze(maze);
-}
-
-    // Helper function to get opposite direction
-    function getOppositeDirection(direction) {
-        switch (direction) {
-            case 'north':
-            return 'south';
-            case 'south':
-            return 'north';
-            case 'west':
-            return 'east';
-            case 'east':
-            return 'west';
-            default:
-            return '';
+      if (currentCellX !== nextCellX) {
+        if (ballVelX > 0 && maze[currentCellY][currentCellX].east) {
+          newBallX = currentCellX + 1 - ballSize / cellSize;
+          ballVelX = 0;
+        } else if (ballVelX < 0 && maze[currentCellY][currentCellX].west) {
+          newBallX = currentCellX + ballSize / cellSize;
+          ballVelX = 0;
         }
-    }
+      }
 
+      if (currentCellY !== nextCellY) {
+        if (ballVelY > 0 && maze[currentCellY][currentCellX].south) {
+          newBallY = currentCellY + 1 - ballSize / cellSize;
+          ballVelY = 0;
+        } else if (ballVelY < 0 && maze[currentCellY][currentCellX].north) {
+          newBallY = currentCellY + ballSize / cellSize;
+          ballVelY = 0;
+        }
+      }
+
+      ballX = newBallX;
+      ballY = newBallY;
+
+      drawMaze(maze);
+    }
 
     // Event listener for arrow key presses
+    let keysPressed = {};
     document.addEventListener('keydown', (event) => {
-      moveBall(event.key);
+      keysPressed[event.key] = true;
+    });
+    document.addEventListener('keyup', (event) => {
+      keysPressed[event.key] = false;
     });
 
+    function gameLoop() {
+      if (keysPressed['ArrowUp']) {
+        ballVelY = Math.max(ballVelY - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowDown']) {
+        ballVelY = Math.min(ballVelY + acceleration, maxSpeed);
+      } else {
+        ballVelY *= friction; // Deceleration
+      }
+      if (keysPressed['ArrowLeft']) {
+        ballVelX = Math.max(ballVelX - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowRight']) {
+        ballVelX = Math.min(ballVelX + acceleration, maxSpeed);
+      } else {
+        ballVelX *= friction; // Deceleration
+      }
+
+      updateBallPosition();
+      requestAnimationFrame(gameLoop);
+    }
+
     drawMaze(maze);
+    gameLoop();
   </script>
 </body>
 </html>
