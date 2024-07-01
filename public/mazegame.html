@@ -20,8 +20,14 @@
     const cellSize = 20;
     let maze = createMaze(rows, cols);
 
+    // Ball variables
+    let ballX = 0;
+    let ballY = 0;
+    const ballSize = 10;
+    const ballSpeed = 5;
+
     function createMaze(rows, cols) {
-      // Initialize the maze grid
+      // create maze grid and potential edges
       let maze = [];
       let edges = [];
 
@@ -29,7 +35,7 @@
         let row = [];
         for (let j = 0; j < cols; j++) {
           row.push({ parent: null, north: true, south: true, east: true, west: true });
-          // Add all possible edges
+          // add all possible edges
           if (i > 0) edges.push({ u: { x: i, y: j }, v: { x: i - 1, y: j } }); // north
           if (j > 0) edges.push({ u: { x: i, y: j }, v: { x: i, y: j - 1 } }); // west
         }
@@ -55,7 +61,7 @@
         return false;
       }
 
-      // Apply Kruskal's algorithm
+      // Kruskal's algo
       for (let edge of edges) {
         let u = maze[edge.u.x][edge.u.y];
         let v = maze[edge.v.x][edge.v.y];
@@ -89,6 +95,9 @@
     }
 
     function drawMaze(maze) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+      // Draw maze walls
       for (let x = 0; x < rows; x++) {
         for (let y = 0; y < cols; y++) {
           let cell = maze[x][y];
@@ -103,7 +112,37 @@
           ctx.stroke();
         }
       }
+
+      // Draw the ball
+      ctx.fillStyle = 'red';
+      ctx.beginPath();
+      ctx.arc(ballX * cellSize + cellSize / 2, ballY * cellSize + cellSize / 2, ballSize, 0, Math.PI * 2);
+      ctx.fill();
     }
+
+    // Function to update ball position based on arrow key press
+    function moveBall(key) {
+      switch (key) {
+        case 'ArrowUp':
+          if (ballY > 0) ballY--;
+          break;
+        case 'ArrowDown':
+          if (ballY < rows - 1) ballY++;
+          break;
+        case 'ArrowLeft':
+          if (ballX > 0) ballX--;
+          break;
+        case 'ArrowRight':
+          if (ballX < cols - 1) ballX++;
+          break;
+      }
+      drawMaze(maze);
+    }
+
+    // Event listener for arrow key presses
+    document.addEventListener('keydown', (event) => {
+      moveBall(event.key);
+    });
 
     drawMaze(maze);
   </script>
