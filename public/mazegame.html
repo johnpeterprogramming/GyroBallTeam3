@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Generator</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const rows = 20;
+    const cols = 20;
+    const cellSize = 20;
+    let maze = createMaze(rows, cols);
+
+    function createMaze(rows, cols) {
+      // Initialize the maze grid
+      let maze = [];
+      let edges = [];
+
+      for (let i = 0; i < rows; i++) {
+        let row = [];
+        for (let j = 0; j < cols; j++) {
+          row.push({ parent: null, north: true, south: true, east: true, west: true });
+          // Add all possible edges
+          if (i > 0) edges.push({ u: { x: i, y: j }, v: { x: i - 1, y: j } }); // north
+          if (j > 0) edges.push({ u: { x: i, y: j }, v: { x: i, y: j - 1 } }); // west
+        }
+        maze.push(row);
+      }
+
+      // Shuffle edges randomly
+      edges = shuffle(edges);
+
+      // Disjoint-set (Union-Find) data structure
+      function find(node) {
+        if (node.parent === null) return node;
+        return find(node.parent);
+      }
+
+      function union(u, v) {
+        let rootU = find(u);
+        let rootV = find(v);
+        if (rootU !== rootV) {
+          rootU.parent = rootV;
+          return true;
+        }
+        return false;
+      }
+
+      // Apply Kruskal's algorithm
+      for (let edge of edges) {
+        let u = maze[edge.u.x][edge.u.y];
+        let v = maze[edge.v.x][edge.v.y];
+        if (union(u, v)) {
+          // Remove wall between u and v
+          if (edge.u.x > edge.v.x) {
+            u.north = false;
+            v.south = false;
+          } else if (edge.u.x < edge.v.x) {
+            v.north = false;
+            u.south = false;
+          } else if (edge.u.y > edge.v.y) {
+            u.west = false;
+            v.east = false;
+          } else if (edge.u.y < edge.v.y) {
+            v.west = false;
+            u.east = false;
+          }
+        }
+      }
+
+      return maze;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function drawMaze(maze) {
+      for (let x = 0; x < rows; x++) {
+        for (let y = 0; y < cols; y++) {
+          let cell = maze[x][y];
+          let startX = y * cellSize;
+          let startY = x * cellSize;
+
+          ctx.beginPath();
+          if (cell.north) ctx.moveTo(startX, startY), ctx.lineTo(startX + cellSize, startY);
+          if (cell.south) ctx.moveTo(startX, startY + cellSize), ctx.lineTo(startX + cellSize, startY + cellSize);
+          if (cell.east) ctx.moveTo(startX + cellSize, startY), ctx.lineTo(startX + cellSize, startY + cellSize);
+          if (cell.west) ctx.moveTo(startX, startY), ctx.lineTo(startX, startY + cellSize);
+          ctx.stroke();
+        }
+      }
+    }
+
+    drawMaze(maze);
+  </script>
+</body>
+</html>
