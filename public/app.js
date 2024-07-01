@@ -1,12 +1,21 @@
-function changeBackground(color) {
-    document.body.style.background = color;
-}
-
 window.addEventListener("load", function () {
-    changeBackground('blue');
+    document.body.style.background = 'blue';
 
     var x = document.getElementById("x");
     var y = document.getElementById("y");
     var z = document.getElementById("z");
+    z.innerText = "Testing";
+
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    function handleOrientation(event) {
+        const alpha = event.alpha;
+        const beta = event.beta;
+        const gamma = event.gamma;
+        x.innerText = alpha;
+        y.innerText = beta;
+        z.innerText = gamma;
+}
 
 });
+
