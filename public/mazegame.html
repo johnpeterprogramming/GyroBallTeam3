@@ -15,9 +15,9 @@
   <script>
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const rows = 20;
-    const cols = 20;
     const cellSize = 20;
+    const rows = canvas.width/cellSize;
+    const cols = canvas.height/cellSize;
     let maze = createMaze(rows, cols);
 
     // Ball variables
@@ -25,7 +25,7 @@
     let ballY = 0.5;
     let ballVelX = 0;
     let ballVelY = 0;
-    const ballSize = 5; // Radius of the ball
+    const ballSize = cellSize/4; // Radius of the ball
     const acceleration = 0.005;
     const maxSpeed = 0.25;
     const friction = 0.95;
@@ -101,6 +101,13 @@
     function drawMaze(maze) {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
+      // Draw the ball
+      ctx.fillStyle = 'red';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
+      ctx.fill();
+
       // Draw maze walls
       for (let x = 0; x < rows; x++) {
         for (let y = 0; y < cols; y++) {
@@ -117,23 +124,46 @@
         }
       }
 
-      // Draw the ball
-      ctx.fillStyle = 'red';
-      ctx.beginPath();
-      ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     // Function to update ball position based on velocity
     function updateBallPosition() {
+
       let newBallX = ballX + ballVelX;
       let newBallY = ballY + ballVelY;
+
+      let x = 0;
+      let y = 0;
+
+      if (ballVelX > 0) {
+        x = ballSize/cellSize;
+      } else if (ballVelX < 0) {
+        x = -ballSize/cellSize;
+      }
+
+      if (ballVelY > 0) {
+        y = ballSize/cellSize;
+      } else if (ballVelY < 0) {
+        y = -ballSize/cellSize;
+      }
 
       // Check for collisions with walls
       let currentCellX = Math.floor(ballX);
       let currentCellY = Math.floor(ballY);
-      let nextCellX = Math.floor(newBallX);
-      let nextCellY = Math.floor(newBallY);
+      let nextCellX = Math.floor(newBallX + x);
+      let nextCellY = Math.floor(newBallY + y);
+
+      // console.log("INFO");
+      // console.log("ballx: " + ballX);
+      // console.log("bally: " + ballY);
+      // console.log("newx: " + newBallX);
+      // console.log("newy: " + newBallY);
+
+      // console.log("INFO");
+      // console.log("currx: " + currentCellX);
+      // console.log("curry: " + currentCellY);
+      // console.log("nextx: " + nextCellX);
+      // console.log("nexty: " + nextCellY);
 
       if (currentCellX !== nextCellX) {
         if (ballVelX > 0 && maze[currentCellY][currentCellX].east) {
