@@ -1,3 +1,4 @@
+const socket = io();
 let current_route = 'new_player';
 
 // Initial page is for creating a new username
@@ -8,18 +9,35 @@ function changeRoute(new_route) {
         import('../views/new_player_view.js').then(new_player => {
             document.title = "New Player";
             document.body.innerHTML = new_player.default();
+
+            let usernameInput = document.getElementById('username');
+            let enterLobbyButton = document.getElementById('enterLobbyButton');
+
+            enterLobbyButton.addEventListener("click", function() {
+                changeRoute('lobby');
+                // alert("Entering lobby with username: " + usernameInput.value);
+                socket.emit('enter_lobby', usernameInput.value);
+
+            });
+
         });
         current_route = 'new_player';
     } else if (new_route == "lobby") {
         import('../views/lobby_view.js').then(lobby => {
             document.title = "Lobby";
             document.body.innerHTML = lobby.default();
+
+            let startGameButton = document.getElementById('startGameButton');
+            startGameButton.addEventListener('click', () => {
+                socket.emit("start_game");
+            });
         });
         current_route = 'lobby';
     } else if (new_route == "game") {
         import('../views/game.js').then(game => {
             document.title = "Game";
             document.body.innerHTML = game.default();
+            game.initializeMaze();
         });
         current_route = 'game';
     }
@@ -28,25 +46,9 @@ function changeRoute(new_route) {
 
 // const routes = ['setup', 'lobby', 'game'];
 window.onload = function () {
-    const socket = io();
-    
-    let usernameInput = document.getElementById('username');
-    let enterLobbyButton = document.getElementById('enterLobbyButton');
     let players_ul_element = document.getElementById("players_in_lobby");
     
     
-    enterLobbyButton.onclick = function() {
-        changeRoute('lobby');
-        // alert("Entering lobby with username: " + usernameInput.value);
-        socket.emit('enter_lobby', usernameInput.value);
-
-        setTimeout(() => {
-            let startGameButton = document.getElementById('startGameButton');
-            startGameButton.addEventListener('click', () => {
-                socket.emit("start_game");
-            });
-        }, 500);
-    }
     
     // LOBBY PAGE CODE
     socket.on("update_lobby", (players_map) => {
