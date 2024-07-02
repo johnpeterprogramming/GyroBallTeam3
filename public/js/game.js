@@ -87,7 +87,7 @@ function drawMaze(maze) {
 ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
 // Draw the ball
-ctx.fillStyle = 'green';
+ctx.fillStyle = 'red';
 ctx.lineWidth = 1.5;
 ctx.beginPath();
 ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
@@ -177,7 +177,6 @@ keysPressed[event.key] = false;
     window.addEventListener('deviceorientation', handleOrientation);
 
     function handleOrientation(event) {
-        alert("test")
         const y_val = event.beta;  // Tilt front-to-back
         const z_val = event.gamma; // Tilt left-to-right
 
