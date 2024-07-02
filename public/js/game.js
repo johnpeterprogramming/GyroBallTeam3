@@ -193,8 +193,8 @@ function handleOrientation(event) {
 });
 
 function gameLoop() {
-updateBallPosition();
-requestAnimationFrame(gameLoop);
+    updateBallPosition();
+    requestAnimationFrame(gameLoop);
 }
 
 drawMaze(maze);
