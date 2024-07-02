@@ -37,7 +37,8 @@ function changeRoute(new_route) {
         import('../views/game.js').then(game => {
             document.title = "Game";
             document.body.innerHTML = game.default();
-            game.initializeMaze();
+            setTimeout(game.initializeMaze(), 2000);
+            // game.initializeMaze();
         });
         current_route = 'game';
     }
