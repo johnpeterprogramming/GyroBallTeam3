@@ -4,6 +4,6 @@ export default () => /*html*/`
         <ul id='players_in_lobby'>
             
         </ul>
-        <button id="enterGameButton">Play the GAME</button>
+        <button id="startGameButton">Play the GAME</button>
     </div>
 `;

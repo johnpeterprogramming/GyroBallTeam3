@@ -27,25 +27,29 @@ function changeRoute(new_route) {
 };
 
 // const routes = ['setup', 'lobby', 'game'];
-
-
 window.onload = function () {
     const socket = io();
     
     let usernameInput = document.getElementById('username');
-    let button = document.getElementById('enterLobbyButton');
+    let enterLobbyButton = document.getElementById('enterLobbyButton');
     let players_ul_element = document.getElementById("players_in_lobby");
     
     
-    button.onclick = function() {
+    enterLobbyButton.onclick = function() {
         changeRoute('lobby');
         // alert("Entering lobby with username: " + usernameInput.value);
         socket.emit('enter_lobby', usernameInput.value);
+
+        setTimeout(() => {
+            // alert("shit is adding eventlistener rn");
+            let startGameButton = document.getElementById('startGameButton');
+            startGameButton.addEventListener('click', startGame);
+
+        }, 500);
     }
     
     // LOBBY PAGE CODE
-    
-    socket.on("players_map", (players_map) => {
+    socket.on("update_lobby", (players_map) => {
         if (current_route == 'lobby') {
             players_ul_element = document.getElementById("players_in_lobby");
             
@@ -54,9 +58,20 @@ window.onload = function () {
             }
 
         }
-        
     });
+
+    
+    startGame = function() {
+        socket.emit('start_game');
+    }
+
+    socket.on('start_game', () => {
+        alert("Receiving signal");
+        changeRoute('game');
+    });
+
 }
+
 
 handleLobbyPage = function(players_map) {
     // maby add check to see if current page is lobby later
