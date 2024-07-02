@@ -41,10 +41,10 @@ window.onload = function () {
         socket.emit('enter_lobby', usernameInput.value);
 
         setTimeout(() => {
-            // alert("shit is adding eventlistener rn");
             let startGameButton = document.getElementById('startGameButton');
-            startGameButton.addEventListener('click', startGame);
-
+            startGameButton.addEventListener('click', () => {
+                socket.emit("start_game");
+            });
         }, 500);
     }
     
@@ -60,13 +60,7 @@ window.onload = function () {
         }
     });
 
-    
-    startGame = function() {
-        socket.emit('start_game');
-    }
-
     socket.on('start_game', () => {
-        alert("Receiving signal");
         changeRoute('game');
     });
 
