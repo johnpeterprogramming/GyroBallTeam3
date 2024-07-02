@@ -16,8 +16,8 @@
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
     const cellSize = 20;
-    const rows = canvas.width/cellSize;
-    const cols = canvas.height/cellSize;
+    const rows = canvas.width / cellSize;
+    const cols = canvas.height / cellSize;
     let maze = createMaze(rows, cols);
 
     // Ball variables
@@ -25,7 +25,7 @@
     let ballY = 0.5;
     let ballVelX = 0;
     let ballVelY = 0;
-    const ballSize = cellSize/4; // Radius of the ball
+    const ballSize = cellSize / 4; // Radius of the ball
     const acceleration = 0.005;
     const maxSpeed = 0.25;
     const friction = 0.95;
@@ -136,15 +136,15 @@
       let y = 0;
 
       if (ballVelX > 0) {
-        x = ballSize/cellSize;
+        x = ballSize / cellSize;
       } else if (ballVelX < 0) {
-        x = -ballSize/cellSize;
+        x = -ballSize / cellSize;
       }
 
       if (ballVelY > 0) {
-        y = ballSize/cellSize;
+        y = ballSize / cellSize;
       } else if (ballVelY < 0) {
-        y = -ballSize/cellSize;
+        y = -ballSize / cellSize;
       }
 
       // Check for collisions with walls
@@ -152,18 +152,6 @@
       let currentCellY = Math.floor(ballY);
       let nextCellX = Math.floor(newBallX + x);
       let nextCellY = Math.floor(newBallY + y);
-
-      // console.log("INFO");
-      // console.log("ballx: " + ballX);
-      // console.log("bally: " + ballY);
-      // console.log("newx: " + newBallX);
-      // console.log("newy: " + newBallY);
-
-      // console.log("INFO");
-      // console.log("currx: " + currentCellX);
-      // console.log("curry: " + currentCellY);
-      // console.log("nextx: " + nextCellX);
-      // console.log("nexty: " + nextCellY);
 
       if (currentCellX !== nextCellX) {
         if (ballVelX > 0 && maze[currentCellY][currentCellX].east) {
@@ -200,22 +188,21 @@
       keysPressed[event.key] = false;
     });
 
-    function gameLoop() {
-      if (keysPressed['ArrowUp']) {
-        ballVelY = Math.max(ballVelY - acceleration, -maxSpeed);
-      } else if (keysPressed['ArrowDown']) {
-        ballVelY = Math.min(ballVelY + acceleration, maxSpeed);
-      } else {
-        ballVelY *= friction; // Deceleration
-      }
-      if (keysPressed['ArrowLeft']) {
-        ballVelX = Math.max(ballVelX - acceleration, -maxSpeed);
-      } else if (keysPressed['ArrowRight']) {
-        ballVelX = Math.min(ballVelX + acceleration, maxSpeed);
-      } else {
-        ballVelX *= friction; // Deceleration
-      }
+    // Gyroscope event listener
+    window.addEventListener("load", function () {
+      window.addEventListener('deviceorientation', handleOrientation);
 
+      function handleOrientation(event) {
+        const y_val = event.beta;  // Tilt front-to-back
+        const z_val = event.gamma; // Tilt left-to-right
+
+        // Adjust ball velocity based on device orientation
+        ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+        ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+      }
+    });
+
+    function gameLoop() {
       updateBallPosition();
       requestAnimationFrame(gameLoop);
     }
