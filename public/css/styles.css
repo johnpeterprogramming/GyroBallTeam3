@@ -81,7 +81,7 @@ body {
   margin:20px;
 }
 
-.button2 a{
+.button2 span {
   color:white;
   font-family:Helvetica, sans-serif;
   font-weight:bold;

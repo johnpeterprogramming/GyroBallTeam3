@@ -85,6 +85,6 @@ handleLobbyPage = function(players_map) {
     for (let playerKey in players_map) {
         // The playerKey is the socket id
         let player_username = players_map[playerKey];
-        players_ul_element.innerHTML += `<li>${player_username} : ${playerKey}</li>`
+        players_ul_element.innerHTML += `<p class="player">${player_username}</p>`
     }
 }

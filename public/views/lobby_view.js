@@ -1,9 +1,12 @@
 export default () => /*html*/`
-    <div class="menu">
-        <h1>Lobby</h1>
-        <ul id='players_in_lobby'>
-            
-        </ul>
-        <button id="startGameButton">Play the GAME</button>
+    <div class="content">
+       
+	   <div class="outset" id="players_in_lobby">
+	   </div>
+	   
+        <button class="button2" id="startGameButton"><span>Play the GAME</span></button>
+		
+		
+		<!-- <div class=lobbyName>Lobby Code:</div> -->
     </div>
 `;
