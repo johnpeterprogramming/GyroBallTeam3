@@ -1,0 +1,8 @@
+
+canvas {
+    border: 1px solid black;
+    transform: preserve-3d;
+}
+body {
+    perspective: 1000px;
+}
