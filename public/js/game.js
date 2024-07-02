@@ -93,6 +93,10 @@ ctx.beginPath();
 ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
 ctx.fill();
 
+// Draw winning square
+ctx.fillStyle = 'green';
+ctx.fillRect((canvas.width-cellSize)/2, (canvas.height-cellSize)/2, cellSize, cellSize);
+
 // Draw maze walls
 for (let x = 0; x < rows; x++) {
     for (let y = 0; y < cols; y++) {
@@ -140,26 +144,36 @@ let nextCellY = Math.floor(newBallY + y);
 
 if (currentCellX !== nextCellX) {
     if (ballVelX > 0 && maze[currentCellY][currentCellX].east) {
-    newBallX = currentCellX + 1 - ballSize / cellSize;
-    ballVelX = 0;
+        newBallX = currentCellX + 1 - ballSize / cellSize;
+        ballVelX = 0;
     } else if (ballVelX < 0 && maze[currentCellY][currentCellX].west) {
-    newBallX = currentCellX + ballSize / cellSize;
-    ballVelX = 0;
+        newBallX = currentCellX + ballSize / cellSize;
+        ballVelX = 0;
+    } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
+        newBallX = ballX;
+        ballVelX = -ballVelX/3;
     }
 }
 
 if (currentCellY !== nextCellY) {
     if (ballVelY > 0 && maze[currentCellY][currentCellX].south) {
-    newBallY = currentCellY + 1 - ballSize / cellSize;
-    ballVelY = 0;
+        newBallY = currentCellY + 1 - ballSize / cellSize;
+        ballVelY = 0;
     } else if (ballVelY < 0 && maze[currentCellY][currentCellX].north) {
-    newBallY = currentCellY + ballSize / cellSize;
-    ballVelY = 0;
+        newBallY = currentCellY + ballSize / cellSize;
+        ballVelY = 0;
+    } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
+        newBallY = ballY;
+        ballVelY = -ballVelY/3;
     }
 }
 
 ballX = newBallX;
 ballY = newBallY;
+
+if (Math.floor(ballX) === Math.floor(cols/2) && Math.floor(ballY) === Math.floor(rows/2)) {
+    console.log("YOU WINNNNNN!!!!");
+}
 
 drawMaze(maze);
 }
@@ -180,11 +194,6 @@ function handleOrientation(event) {
     const y_val = event.beta;  // Tilt front-to-back
     const z_val = event.gamma; // Tilt left-to-right
 
-    //let testDiv = document.findElementById('test');
-    // testDiv.innerHTML += y_val + " : " + z_val + " <br>";
-    // console.log("Y:" + y_val);
-    // console.log("Z:" + z_val);
-
     canvas.style.transform = `rotateY(${event.gamma/2}deg) rotateX(${-event.beta/2}deg)`;
 
     // Adjust ball velocity based on device orientation
@@ -195,16 +204,16 @@ function handleOrientation(event) {
 function gameLoop() {
     if (keysPressed['ArrowUp']) {
         ballVelY = Math.max(ballVelY - acceleration, -maxSpeed);
-      } else if (keysPressed['ArrowDown']) {
+    } else if (keysPressed['ArrowDown']) {
         ballVelY = Math.min(ballVelY + acceleration, maxSpeed);
-      } else {
+    } else {
         ballVelY *= friction; // Deceleration
-      }
-      if (keysPressed['ArrowLeft']) {
+    }
+    if (keysPressed['ArrowLeft']) {
         ballVelX = Math.max(ballVelX - acceleration, -maxSpeed);
-      } else if (keysPressed['ArrowRight']) {
+    } else if (keysPressed['ArrowRight']) {
         ballVelX = Math.min(ballVelX + acceleration, maxSpeed);
-      } else {
+    } else {
         ballVelX *= friction; // Deceleration
     }
     updateBallPosition();

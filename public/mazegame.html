@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <canvas id="mazeCanvas" width="380" height="380"></canvas>
   <script>
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
@@ -112,6 +112,9 @@
       ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
       ctx.fill();
 
+      ctx.fillStyle = 'green';
+      ctx.fillRect((canvas.width-cellSize)/2, (canvas.height-cellSize)/2, cellSize, cellSize);
+
       // Draw maze walls
       for (let x = 0; x < rows; x++) {
         for (let y = 0; y < cols; y++) {
@@ -160,25 +163,35 @@
       if (currentCellX !== nextCellX) {
         if (ballVelX > 0 && maze[currentCellY][currentCellX].east) {
           newBallX = currentCellX + 1 - ballSize / cellSize;
-          ballVelX = 0;
+          ballVelX = -ballVelX/3;
         } else if (ballVelX < 0 && maze[currentCellY][currentCellX].west) {
           newBallX = currentCellX + ballSize / cellSize;
-          ballVelX = 0;
+          ballVelX = -ballVelX/3;
+        } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
+          newBallX = ballX;
+          ballVelX = -ballVelX/3;
         }
       }
 
       if (currentCellY !== nextCellY) {
         if (ballVelY > 0 && maze[currentCellY][currentCellX].south) {
           newBallY = currentCellY + 1 - ballSize / cellSize;
-          ballVelY = 0;
+          ballVelY = -ballVelY/3;
         } else if (ballVelY < 0 && maze[currentCellY][currentCellX].north) {
           newBallY = currentCellY + ballSize / cellSize;
-          ballVelY = 0;
+          ballVelY = -ballVelY/3;
+        } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
+          newBallY = ballY;
+          ballVelY = -ballVelY/3;
         }
       }
 
       ballX = newBallX;
       ballY = newBallY;
+
+      if (Math.floor(ballX) === Math.floor(cols/2) && Math.floor(ballY) === Math.floor(rows/2)) {
+        console.log("YOU WINNNNNN!!!!");
+      }
 
       drawMaze(maze);
     }
