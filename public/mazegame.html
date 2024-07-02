@@ -7,6 +7,10 @@
   <style>
     canvas {
       border: 1px solid black;
+      transform: preserve-3d;
+    }
+    body {
+      perspective: 1000px;
     }
   </style>
 </head>
@@ -195,6 +199,8 @@
         const y_val = event.beta;  // Tilt front-to-back
         const z_val = event.gamma; // Tilt left-to-right
 
+        canvas.style.transform = `rotateY(${event.gamma/2}deg) rotateX(${-event.beta/2}deg)`;
+
         // Adjust ball velocity based on device orientation
         ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
         ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
@@ -215,7 +221,7 @@
       } else {
         ballVelX *= friction; // Deceleration
       }
-      
+
       updateBallPosition();
       requestAnimationFrame(gameLoop);
     }

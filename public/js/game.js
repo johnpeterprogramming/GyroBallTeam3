@@ -173,18 +173,24 @@ document.addEventListener('keyup', (event) => {
 keysPressed[event.key] = false;
 });
 
-    // Gyroscope event listener
-    window.addEventListener('deviceorientation', handleOrientation);
+// Gyroscope event listener
+window.addEventListener('deviceorientation', handleOrientation);
 
-    function handleOrientation(event) {
-        const y_val = event.beta;  // Tilt front-to-back
-        const z_val = event.gamma; // Tilt left-to-right
+function handleOrientation(event) {
+    const y_val = event.beta;  // Tilt front-to-back
+    const z_val = event.gamma; // Tilt left-to-right
 
-        // Adjust ball velocity based on device orientation
-        ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
-        ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
-    }
+    //let testDiv = document.findElementById('test');
+    // testDiv.innerHTML += y_val + " : " + z_val + " <br>";
+    // console.log("Y:" + y_val);
+    // console.log("Z:" + z_val);
 
+    canvas.style.transform = `rotateY(${event.gamma/2}deg) rotateX(${-event.beta/2}deg)`;
+
+    // Adjust ball velocity based on device orientation
+    ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+    ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+}
 
 function gameLoop() {
     if (keysPressed['ArrowUp']) {
