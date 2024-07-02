@@ -201,6 +201,21 @@
     }
 
     function gameLoop() {
+      if (keysPressed['ArrowUp']) {
+        ballVelY = Math.max(ballVelY - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowDown']) {
+        ballVelY = Math.min(ballVelY + acceleration, maxSpeed);
+      } else {
+        ballVelY *= friction; // Deceleration
+      }
+      if (keysPressed['ArrowLeft']) {
+        ballVelX = Math.max(ballVelX - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowRight']) {
+        ballVelX = Math.min(ballVelX + acceleration, maxSpeed);
+      } else {
+        ballVelX *= friction; // Deceleration
+      }
+      
       updateBallPosition();
       requestAnimationFrame(gameLoop);
     }

@@ -87,7 +87,7 @@ function drawMaze(maze) {
 ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
 // Draw the ball
-ctx.fillStyle = 'red';
+ctx.fillStyle = 'green';
 ctx.lineWidth = 1.5;
 ctx.beginPath();
 ctx.arc(ballX * cellSize, ballY * cellSize, ballSize, 0, Math.PI * 2);
@@ -173,26 +173,35 @@ document.addEventListener('keyup', (event) => {
 keysPressed[event.key] = false;
 });
 
-// Gyroscope event listener
-window.addEventListener("load", function () {
-window.addEventListener('deviceorientation', handleOrientation);
+    // Gyroscope event listener
+    window.addEventListener('deviceorientation', handleOrientation);
 
-function handleOrientation(event) {
-    const y_val = event.beta;  // Tilt front-to-back
-    const z_val = event.gamma; // Tilt left-to-right
+    function handleOrientation(event) {
+        alert("test")
+        const y_val = event.beta;  // Tilt front-to-back
+        const z_val = event.gamma; // Tilt left-to-right
 
-    let testDiv = document.findElementById('test');
-    testDiv.innerHTML += y_val + " : " + z_val + " <br>";
-    console.log("Y:" + y_val);
-    console.log("Z:" + z_val);
+        // Adjust ball velocity based on device orientation
+        ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+        ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
+    }
 
-    // Adjust ball velocity based on device orientation
-    ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
-    ballVelX = Math.max(Math.min(z_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
-}
-});
 
 function gameLoop() {
+    if (keysPressed['ArrowUp']) {
+        ballVelY = Math.max(ballVelY - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowDown']) {
+        ballVelY = Math.min(ballVelY + acceleration, maxSpeed);
+      } else {
+        ballVelY *= friction; // Deceleration
+      }
+      if (keysPressed['ArrowLeft']) {
+        ballVelX = Math.max(ballVelX - acceleration, -maxSpeed);
+      } else if (keysPressed['ArrowRight']) {
+        ballVelX = Math.min(ballVelX + acceleration, maxSpeed);
+      } else {
+        ballVelX *= friction; // Deceleration
+    }
     updateBallPosition();
     requestAnimationFrame(gameLoop);
 }
