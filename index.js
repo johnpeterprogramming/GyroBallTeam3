@@ -15,7 +15,7 @@ app.use(express.static('public'));
 // });
 
 server.listen(port, () => {
-  console.log(`Server running at http://127.0.0.1:${port}`);
+  console.log(`Server running at http://0.0.0.0:${port}`);
 });
 
 // states: waiting for players to join(lobby), playing game(game)
