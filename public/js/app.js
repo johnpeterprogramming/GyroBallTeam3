@@ -34,11 +34,17 @@ function changeRoute(new_route) {
         });
         current_route = 'lobby';
     } else if (new_route == "game") {
-        import('../views/game.js').then(game => {
+        import('../views/game_view.js').then(game => {
             document.title = "Game";
             document.body.innerHTML = game.default();
-            setTimeout(game.initializeMaze(), 2000);
-            // game.initializeMaze();
+            setTimeout(() => {
+                const script = document.createElement('script');
+                script.src = '/js/game.js';
+                document.body.appendChild(script);
+                // script.onload = () => {
+                //     alert("game script has been loaded");
+                // }
+            }, 1000);
         });
         current_route = 'game';
     }
