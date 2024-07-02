@@ -3,6 +3,8 @@ export default () => /*html*/`
 `;
 
 export function initializeMaze() { 
+  alert("initializing maze");
+
   const canvas = document.getElementById('mazeCanvas');
   const ctx = canvas.getContext('2d');
   const cellSize = 20;
@@ -185,6 +187,9 @@ export function initializeMaze() {
     function handleOrientation(event) {
       const y_val = event.beta;  // Tilt front-to-back
       const z_val = event.gamma; // Tilt left-to-right
+
+      console.log("Y:" + y_val);
+      console.log("Z:" + z_val);
 
       // Adjust ball velocity based on device orientation
       ballVelY = Math.max(Math.min(y_val / 90 * maxSpeed, maxSpeed), -maxSpeed);
