@@ -16,7 +16,7 @@ server.listen(port, () => {
 
 // states: waiting for players to join(lobby), playing game(game)
 // pages: register, lobby, game
-let state = 'MENU';
+let state = 'lobby';
 let players_map = {};
 let player_count = 0;
 
@@ -30,21 +30,27 @@ io.on("connection", (socket) => {
       console.log("User with socket id: " + socket.id + " and username: " + username + "has entered the lobby");
       players_map[socket.id] = username;
       player_count++;
-  
+
       // all players should see updated players list when a new player joins lobby
-      io.emit('player_added', players_map);
+      // io.emit('players_map', players_map);
     }
 
   })
 
   socket.on("disconnect", () => {
-    if (players_map[socket.id])
+    if (players_map[socket.id]) {
       console.log("Player: " + players_map[socket.id] + " disconnected.");
 
-    // Remove player from players map
-    delete players_map[socket.id];
-    player_count--;
+      // Remove player from players map
+      delete players_map[socket.id];
+      player_count--;
+    }
   });
 
-  console.log("User connected!");
+  // Updates players in lobby every second for all users
+  setInterval(() => {
+    if (state == 'lobby') {
+      io.emit('players_map', players_map);
+    }
+  }, 5000);
 })

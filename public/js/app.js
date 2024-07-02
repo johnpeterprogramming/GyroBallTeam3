@@ -1,33 +1,40 @@
+let current_route = 'new_player';
+
+// Initial page is for creating a new username
+changeRoute('new_player');
+
 function changeRoute(new_route) {
     if (new_route == "new_player") {
         import('../views/new_player_view.js').then(new_player => {
             document.title = "New Player";
             document.body.innerHTML = new_player.default();
         });
+        current_route = 'new_player';
     } else if (new_route == "lobby") {
         import('../views/lobby_view.js').then(lobby => {
             document.title = "Lobby";
             document.body.innerHTML = lobby.default();
         });
+        current_route = 'lobby';
     } else if (new_route == "game") {
         import('../views/game.js').then(game => {
             document.title = "Game";
             document.body.innerHTML = game.default();
         });
+        current_route = 'game';
     }
     
 };
 
 // const routes = ['setup', 'lobby', 'game'];
 
-// Initial page is for creating a new username
-changeRoute('new_player');
 
 window.onload = function () {
     const socket = io();
     
     let usernameInput = document.getElementById('username');
     let button = document.getElementById('enterLobbyButton');
+    let players_ul_element = document.getElementById("players_in_lobby");
     
     
     button.onclick = function() {
@@ -38,13 +45,14 @@ window.onload = function () {
     
     // LOBBY PAGE CODE
     
-    socket.on("player_added", (players_map) => {
-        let players_ul_element = document.getElementById("players_in_lobby");
-        
-        if (!players_ul_element) {
-            setTimeout(handleLobbyPage, 500, players_map);
+    socket.on("players_map", (players_map) => {
+        if (current_route == 'lobby') {
+            players_ul_element = document.getElementById("players_in_lobby");
+            
+            if (players_ul_element) {
+                handleLobbyPage(players_map);
+            }
 
-            return;
         }
         
     });
