@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Host</title>
+  <style>
+    #lobby {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #mazeCanvas {
+      border: 1px solid black;
+      display: none;
+    }
+    #leaderboard {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="lobby">
+    <h1>Waiting for players...</h1>
+    <p id="playerCount">Players connected: 0</p>
+    <button id="startButton" disabled>Start Game</button>
+  </div>
+  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ol id="leaderboardList"></ol>
+  </div>
+  <script>
+    const lobby = document.getElementById('lobby');
+    const playerCountElem = document.getElementById('playerCount');
+    const startButton = document.getElementById('startButton');
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const cellSize = 20;
+    const rows = canvas.width / cellSize;
+    const cols = canvas.height / cellSize;
+    const ballSize = cellSize / 4; // Radius of the ball
+    const maxSpeed = 0.25;
+    const friction = 0.95;
+    const leaderboardList = document.getElementById('leaderboardList');
+    let balls = [];
+    let maze = createMaze(rows, cols);
+    let avgGyro = { beta: 0, gamma: 0 };
+
+    const socket = new WebSocket('ws://localhost:8080');
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'clientCount') {
+        playerCountElem.textContent = `Players connected: ${data.count}`;
+        startButton.disabled = data.count < 2 || data.count > 4;
+      } else if (data.type === 'start') {
+        initializeBalls(data.players);
+        startGame();
+      } else if (data.type === 'stop') {
+        stopGame();
+      } else if (data.type === 'updateLeaderboard') {
+        updateLeaderboard(data.leaderboard);
+      } else {
+        avgGyro = data;
+      }
+    };
+
+    socket.onopen = () => {
+      console.log('Connected to server');
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from server');
+      stopGame();
+    };
+
+    startButton.onclick = () => {
+      socket.send(JSON.stringify({ type: 'startGame' }));
+      startGame();
+    };
+
+    function startGame() {
+      lobby.style.display = 'none';
+      canvas.style.display = 'block';
+      drawMaze(maze);
+      gameLoop();
+    }
+
+    function stopGame() {
+      lobby.style.display = 'flex';
+      canvas.style.display = 'none';
+      playerCountElem.textContent = 'Players connected: 0';
+    }
+
+    function initializeBalls(players) {
+      balls = players.map(player => ({
+        x: player.position.x,
+        y: player.position.y,
+        velX: 0,
+        velY: 0,
+        color: player.color
+      }));
+    }
+
+    function createMaze(rows, cols) {
+      // create maze grid and potential edges
+      let maze = [];
+      let edges = [];
+
+      for (let i = 0; i < rows; i++) {
+        let row = [];
+        for (let j = 0; j < cols; j++) {
+          row.push({ parent: null, north: true, south: true, east: true, west: true });
+          // add all possible edges
+          if (i > 0) edges.push({ u: { x: i, y: j }, v: { x: i - 1, y: j } }); // north
+          if (j > 0) edges.push({ u: { x: i, y: j }, v: { x: i, y: j - 1 } }); // west
+        }
+        maze.push(row);
+      }
+
+      // Shuffle edges randomly
+      edges = shuffle(edges);
+
+      // Disjoint-set (Union-Find) data structure
+      function find(node) {
+        if (node.parent === null) return node;
+        return find(node.parent);
+      }
+
+      function union(u, v) {
+        let rootU = find(u);
+        let rootV = find(v);
+        if (rootU !== rootV) {
+          rootU.parent = rootV;
+          return true;
+        }
+        return false;
+      }
+
+      // Kruskal's algo
+      for (let edge of edges) {
+        let u = maze[edge.u.x][edge.u.y];
+        let v = maze[edge.v.x][edge.v.y];
+        if (union(u, v)) {
+          // Remove wall between u and v
+          if (edge.u.x > edge.v.x) {
+            u.north = false;
+            v.south = false;
+          } else if (edge.u.x < edge.v.x) {
+            v.north = false;
+            u.south = false;
+          } else if (edge.u.y > edge.v.y) {
+            u.west = false;
+            v.east = false;
+          } else if (edge.u.y < edge.v.y) {
+            v.west = false;
+            u.east = false;
+          }
+        }
+      }
+
+      return maze;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function drawMaze(maze) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Highlight the central tile
+      const centerX = Math.floor(rows / 2) * cellSize;
+      const centerY = Math.floor(cols / 2) * cellSize;
+      ctx.fillStyle = 'lightgreen';
+      ctx.fillRect(centerX, centerY, cellSize, cellSize);
+
+      for (let x = 0; x < rows; x++) {
+        for (let y = 0; y < cols; y++) {
+          let cell = maze[x][y];
+          let startX = y * cellSize;
+          let startY = x * cellSize;
+
+          ctx.beginPath();
+          if (cell.north) ctx.moveTo(startX, startY), ctx.lineTo(startX + cellSize, startY);
+          if (cell.south) ctx.moveTo(startX, startY + cellSize), ctx.lineTo(startX + cellSize, startY + cellSize);
+          if (cell.east) ctx.moveTo(startX + cellSize, startY), ctx.lineTo(startX + cellSize, startY + cellSize);
+          if (cell.west) ctx.moveTo(startX, startY), ctx.lineTo(startX, startY + cellSize);
+          ctx.stroke();
+        }
+      }
+
+      for (let ball of balls) {
+        ctx.fillStyle = ball.color;
+        ctx.beginPath();
+        ctx.arc(ball.x * cellSize, ball.y * cellSize, ballSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function updateBallPosition() {
+      for (let ball of balls) {
+        ball.velY = Math.max(Math.min(avgGyro.beta / 90 * maxSpeed, maxSpeed), -maxSpeed);
+        ball.velX = Math.max(Math.min(avgGyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
+
+        let newBallX = ball.x + ball.velX;
+        let newBallY = ball.y + ball.velY;
+
+        let x = ball.velX > 0 ? ballSize / cellSize : -ballSize / cellSize;
+        let y = ball.velY > 0 ? ballSize / cellSize : -ballSize / cellSize;
+
+        let currentCellX = Math.floor(ball.x);
+        let currentCellY = Math.floor(ball.y);
+        let nextCellX = Math.floor(newBallX + x);
+        let nextCellY = Math.floor(newBallY + y);
+
+        if (currentCellX !== nextCellX) {
+          if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
+            newBallX = currentCellX + 1 - ballSize / cellSize;
+            ball.velX = 0;
+          } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
+            newBallX = currentCellX + ballSize / cellSize;
+            ball.velX = 0;
+          }
+        }
+
+        if (currentCellY !== nextCellY) {
+          if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
+            newBallY = currentCellY + 1 - ballSize / cellSize;
+            ball.velY = 0;
+          } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
+            newBallY = currentCellY + ballSize / cellSize;
+            ball.velY = 0;
+          }
+        }
+
+        ball.x = newBallX;
+        ball.y = newBallY;
+
+        if (Math.hypot(newBallX - 10, newBallY - 10) < ballSize / cellSize) {
+          socket.send(JSON.stringify({ type: 'reachedCenter' }));
+        }
+      }
+
+      drawMaze(maze);
+    }
+
+    function updateLeaderboard(leaderboard) {
+      leaderboardList.innerHTML = '';
+      leaderboard.forEach(player => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `Player ${player.number} (${player.color})`;
+        leaderboardList.appendChild(listItem);
+      });
+    }
+
+    function gameLoop() {
+      updateBallPosition();
+      requestAnimationFrame(gameLoop);
+    }
+  </script>
+</body>
+</html>

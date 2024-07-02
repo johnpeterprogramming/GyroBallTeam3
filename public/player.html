@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #playerInfo {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="playerInfo">Waiting for player data...</div>
+  <script>
+    const socket = new WebSocket('ws://localhost:8080');
+    const playerInfoElem = document.getElementById('playerInfo');
+
+    socket.onopen = () => {
+      console.log('Connected to server');
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from server');
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'playerData') {
+        playerInfoElem.textContent = `Player ${data.number}`;
+        document.body.style.backgroundColor = data.color;
+      }
+    };
+
+    window.addEventListener('deviceorientation', (event) => {
+      const gyroData = {
+        beta: event.beta, // Tilt front-to-back
+        gamma: event.gamma // Tilt left-to-right
+      };
+      socket.send(JSON.stringify(gyroData));
+    });
+  </script>
+</body>
+</html>
