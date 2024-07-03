@@ -135,7 +135,7 @@ setInterval(broadcastAvgGyroData, 100);
 app.use(express.static('public'));
 
 // start server
-const PORT = process.env.PORT || 8080;
+const PORT = 80;
 server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });

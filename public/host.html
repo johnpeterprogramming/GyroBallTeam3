@@ -51,7 +51,7 @@
     let maze = createMaze(rows, cols);
     let avgGyro = { beta: 0, gamma: 0 };
 
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://localhost:80');
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);

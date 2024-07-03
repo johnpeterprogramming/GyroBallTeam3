@@ -23,7 +23,7 @@
 <body>
   <div id="playerInfo">Waiting for player data...</div>
   <script>
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://localhost:80');
     const playerInfoElem = document.getElementById('playerInfo');
 
     socket.onopen = () => {
