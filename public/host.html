@@ -237,8 +237,8 @@
           ball.velY += 0.035 * gyro.beta / 180 * maxSpeed;
           ball.velX += 0.035 * gyro.gamma / 90 * maxSpeed;
 
-          ball.velX = 0.97* ball.velX;
-          ball.velY = 0.97* ball.velY;
+          ball.velX = 0.99* ball.velX;
+          ball.velY = 0.99* ball.velY;
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)

@@ -43,12 +43,26 @@
       }
     };
 
+    // window.addEventListener('deviceorientation', (event) => {
+    //   const gyroData = {
+    //     beta: event.beta, // Tilt front-to-back
+    //     gamma: event.gamma // Tilt left-to-right
+    //   };
+    //   socket.send(JSON.stringify(gyroData));
+    // });
+    let lastExecutionTime = 0;
+    const delay = 25;
+
     window.addEventListener('deviceorientation', (event) => {
-      const gyroData = {
-        beta: event.beta, // Tilt front-to-back
-        gamma: event.gamma // Tilt left-to-right
-      };
-      socket.send(JSON.stringify(gyroData));
+      const currentTime = Date.now();
+      if (currentTime - lastExecutionTime >= delay) {
+        lastExecutionTime = currentTime;
+        const gyroData = {
+          beta: event.beta, // Tilt front-to-back
+          gamma: event.gamma // Tilt left-to-right
+        };
+        socket.send(JSON.stringify(gyroData));
+      }
     });
   </script>
 </body>
