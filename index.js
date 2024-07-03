@@ -44,10 +44,10 @@ io.on("connection", (socket) => {
 
   })
 
-  // socket.on('start_game', () => {
-  //   // Only host can start game ---ADD THIS LATER
-  //   io.emit('start_game', players_map);
-  // });
+  socket.on('start_game', () => {
+    // Only host can start game ---ADD THIS LATER
+    socket.broadcast.emit('start_game', players_map);
+  });
 
   socket.on("disconnect", () => {
     if (players_map[socket.id]) {
@@ -59,9 +59,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Updates players in lobby every second for all users
-  setInterval(() => {
-    io.emit('update_lobby', players_map);
-  }, 1000);
+    // Updates players in lobby every second for all users
+    setInterval(() => {
+        io.emit('update_lobby', players_map);
+    }, 1000);
+
 
 })

@@ -74,8 +74,8 @@ window.onload = function () {
         }
     });
 
-    socket.on('start_game', (players) => {
-        players_map = players
+
+    socket.on('start_game', () => {
         changeRoute('game');
 
         socket.on("player_state_update", (player_state) => {

@@ -17,7 +17,6 @@ function changeRoute(new_route) {
                 changeRoute('lobby');
                 // alert("Entering lobby with username: " + usernameInput.value);
                 socket.emit('enter_lobby', usernameInput.value);
-
             });
 
         });
@@ -27,10 +26,10 @@ function changeRoute(new_route) {
             document.title = "Lobby";
             document.body.innerHTML = lobby.default();
 
-            let startGameButton = document.getElementById('startGameButton');
-            startGameButton.addEventListener('click', () => {
-                socket.emit("start_game");
-            });
+            // let startGameButton = document.getElementById('startGameButton');
+            // startGameButton.addEventListener('click', () => {
+            //     socket.emit("start_game");
+            // });
         });
         current_route = 'lobby';
     } else if (new_route == "game") {
@@ -41,9 +40,6 @@ function changeRoute(new_route) {
                 const script = document.createElement('script');
                 script.src = '/js/game.js';
                 document.body.appendChild(script);
-                // script.onload = () => {
-                //     alert("game script has been loaded");
-                // }
             }, 1000);
         });
         current_route = 'game';
