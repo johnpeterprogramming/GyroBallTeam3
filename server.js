@@ -9,7 +9,7 @@ const wss = new WebSocket.Server({ server });
 let host = null;
 let clients = {};
 let gameStarted = false;
-let leaderboard = [];
+//let leaderboard = [];
 
 const playerColors = ['red', 'blue', 'green', 'yellow'];
 const ballPositions = [
@@ -105,7 +105,7 @@ wss.on('connection', (socket) => {
 
 function startGame() {
   if (!host) return;
-  leaderboard = [];
+  //leaderboard = [];
   
   const players = Object.entries(clients).map(([id, client]) => ({
     id,
@@ -136,18 +136,18 @@ function broadcastAvgGyroData() {
   host.send(JSON.stringify(avgGyro));
 }
 
-function handlePlayerReachedCenter(playerId) {
-  console.log(playerId);
-  if (!leaderboard.includes(playerId)) {
-    leaderboard.push(playerId);
-    const playerData = clients[playerId].playerData;
-    host.send(JSON.stringify({
-      type: 'updateLeaderboard',
-      leaderboard: leaderboard.map(id => clients[id].playerData)
-    }));
-  }
+// function handlePlayerReachedCenter(playerId) {
+//   console.log(playerId);
+//   if (!leaderboard.includes(playerId)) {
+//     leaderboard.push(playerId);
+//     const playerData = clients[playerId].playerData;
+//     host.send(JSON.stringify({
+//       type: 'updateLeaderboard',
+//       leaderboard: leaderboard.map(id => clients[id].playerData)
+//     }));
+//   }
 
-}
+// }
 
 setInterval(broadcastAvgGyroData, 50);
 

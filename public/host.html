@@ -258,17 +258,17 @@
           ball.x = newBallX;
           ball.y = newBallY;
 
-            if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
-            //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
-              if (!leaderboard.includes(ball.id)) {
-                ball.finished = true;
-                leaderboard.push(ball.id);
-                updateLeaderboard(leaderboard, ball);
-              }
-            }
+          if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
+          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+
+            ball.finished = true;
+            leaderboard.push(ball.id);
+            updateLeaderboard(leaderboard, ball);
+
+          }
+
         }
       }
-      
 
       drawMaze(maze);
     }
