@@ -12,10 +12,14 @@
     }
     #mazeCanvas {
       border: 1px solid black;
+      transform: preserve-3d;
       display: none;
     }
     #leaderboard {
       margin-top: 20px;
+    }
+    #body {
+      perspective: 1000px;
     }
   </style>
 </head>
@@ -25,7 +29,7 @@
     <p id="playerCount">Players connected: 0</p>
     <button id="startButton" disabled>Start Game</button>
   </div>
-  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <canvas id="mazeCanvas" width="380" height="380"></canvas>
   <div id="leaderboard">
     <h2>Leaderboard</h2>
     <ol id="leaderboardList"></ol>
@@ -62,7 +66,9 @@
       } else if (data.type === 'updateLeaderboard') {
         updateLeaderboard(data.leaderboard);
       } else {
+        data.
         avgGyro = data;
+        canvas.style.transform = `rotateY(${data.gamma/2}deg) rotateX(${-data.beta/2}deg)`;
       }
     };
 
@@ -221,21 +227,27 @@
 
         if (currentCellX !== nextCellX) {
           if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
-            newBallX = currentCellX + 1 - ballSize / cellSize;
+            newBallX = nextCellX - ballSize / cellSize;
             ball.velX = 0;
           } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
             newBallX = currentCellX + ballSize / cellSize;
             ball.velX = 0;
+          } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
+            newBallX = ball.x;
+            ball.velX = -ball.velX/3;
           }
         }
 
         if (currentCellY !== nextCellY) {
           if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
-            newBallY = currentCellY + 1 - ballSize / cellSize;
+            newBallY = nextCellY - ballSize / cellSize;
             ball.velY = 0;
           } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
             newBallY = currentCellY + ballSize / cellSize;
             ball.velY = 0;
+          } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
+            newBallY = ball.y;
+            ball.velY = -ball.velY/3;
           }
         }
 
