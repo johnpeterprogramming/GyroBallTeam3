@@ -34,7 +34,7 @@ function changeRoute(new_route) {
         });
         current_route = 'lobby';
     } else if (new_route == "game") {
-        import('../views/game_view.js').then(game => {
+        import('../views/game_player_view.js').then(game => {
             document.title = "Game";
             document.body.innerHTML = game.default();
             setTimeout(() => {
@@ -54,8 +54,6 @@ function changeRoute(new_route) {
 // const routes = ['setup', 'lobby', 'game'];
 window.onload = function () {
     let players_ul_element = document.getElementById("players_in_lobby");
-    
-    
     
     // LOBBY PAGE CODE
     socket.on("update_lobby", (players_map) => {

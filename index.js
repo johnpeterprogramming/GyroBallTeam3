@@ -10,18 +10,21 @@ const port = 3000;
 
 app.use(express.static('public'));
 
-// app.get('/host', (req, res) => {
-//   res.sendFile(join(__dirname, 'public/host.html'))
-// });
-
+app.get('/host', (req, res) => {
+  res.sendFile(join(__dirname, 'public/host.html'))
+});
+  
 server.listen(port, () => {
   console.log(`Server running at http://0.0.0.0:${port}`);
 });
 
 // states: waiting for players to join(lobby), playing game(game)
 // pages: register, lobby, game
-let game_state = {'done': true, winner: null, player_coords: {}};
+// let game_state = {'done': true, winner: null, player_coords: {}};
 
+let playing = false;
+
+// Has structure: {'username', 'state':{x, y, velx, vely, orientY, orientZ}}
 let players_map = {};
 let player_count = 0;
 
@@ -31,8 +34,8 @@ io.on("connection", (socket) => {
     if (players_map.length >= 4) {
       console.log("Max of 4 players allowed");
     } else {
-      console.log("User with socket id: " + socket.id + " and username: " + username + " has entered the lobby");
-      players_map[socket.id] = username;
+      // console.log("User with socket id: " + socket.id + " and username: " + username + " has entered the lobby");
+      players_map[socket.id]['username'] = username;
       player_count++;
 
       // all players should see updated players list when a new player joins lobby
@@ -41,9 +44,10 @@ io.on("connection", (socket) => {
 
   })
 
-  socket.on('start_game', () => {
-    io.emit('start_game');
-  });
+  // socket.on('start_game', () => {
+  //   // Only host can start game ---ADD THIS LATER
+  //   io.emit('start_game', players_map);
+  // });
 
   socket.on("disconnect", () => {
     if (players_map[socket.id]) {
@@ -57,8 +61,7 @@ io.on("connection", (socket) => {
 
   // Updates players in lobby every second for all users
   setInterval(() => {
-    if (game_state.done == true) {
-      io.emit('update_lobby', players_map);
-    }
+    io.emit('update_lobby', players_map);
   }, 1000);
+
 })
