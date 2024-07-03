@@ -16,7 +16,7 @@ body {
     flex-direction:column;
     justify-content: center;
     align-items: center;
-	width:90vw;
+	/* width:90vw; */
 	padding:20px;
 	background-color:#0c1a31;
    height: 100%;
