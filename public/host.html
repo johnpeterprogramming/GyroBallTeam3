@@ -47,7 +47,7 @@
     let maze = createMaze(rows, cols);
     let avgGyro = { beta: 0, gamma: 0 };
 
-    const socket = new WebSocket('wss:https://gyroballteam3.onrender.com');
+    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
