@@ -53,8 +53,8 @@
     let leaderboard = [];
     let numFinished = 0;
 
-    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
-    //const socket = new WebSocket('ws://localhost:8080');
+    // const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    const socket = new WebSocket('ws://localhost:8080');
     
 
     socket.onmessage = (event) => {
