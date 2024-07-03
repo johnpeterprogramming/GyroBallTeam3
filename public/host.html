@@ -18,7 +18,6 @@
     <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
 
-
     <canvas id="mazeCanvas" width="646" height="646"></canvas>
         
     <div id="leaderboard">
@@ -36,7 +35,7 @@
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
-    const maxSpeed = 0.04;
+    const maxSpeed = 0.05;
     const leaderboardList = document.getElementById('leaderboardList');
     const leaderboardDiv = document.getElementById('leaderboard');
 
@@ -109,8 +108,8 @@
 
     function gameOver() {
       canvas.style.display = 'none';
-      leaderboardDiv.style.fontSize = '46px';
-      leaderboardDiv.style.fontSize = '26px';
+      leaderboardDiv.style.fontSize = '60px';
+      leaderboardDiv.style.fontSize = '32px';
     }
 
     function initializeBalls(players) {
@@ -235,11 +234,11 @@
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
 
-          ball.velY += 0.03 * gyro.beta / 180 * maxSpeed;
-          ball.velX += 0.03 * gyro.gamma / 90 * maxSpeed;
+          ball.velY += 0.035 * gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.035 * gyro.gamma / 90 * maxSpeed;
 
-          ball.velX = 0.99* ball.velX;
-          ball.velY = 0.99* ball.velY;
+          ball.velX = 0.98* ball.velX;
+          ball.velY = 0.98* ball.velY;
 
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
