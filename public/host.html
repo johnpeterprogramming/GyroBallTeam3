@@ -234,11 +234,8 @@
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
 
-          ball.velY += 0.033 * gyro.beta / 180 * maxSpeed;
-          ball.velX += 0.033 * gyro.gamma / 90 * maxSpeed;
-
-          // ball.velX = 0.99 * ball.velX;
-          // ball.velY = 0.99 * ball.velY;
+          ball.velY += 0.025* gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.025 * gyro.gamma / 90 * maxSpeed;
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
@@ -257,26 +254,26 @@
           if (currentCellX !== nextCellX) {
             if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
               newBallX = currentCellX + 1 - ballSize / cellSize;
-              ball.velX = -ball.velX/3;
+              ball.velX = -ball.velX/2.5;
             } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
               newBallX = currentCellX + ballSize / cellSize;
-              ball.velX = -ball.velX/3;
+              ball.velX = -ball.velX/2.5;
             } else if (newBallY % 1 > 0.8 || newBallY % 1 < 0.2) {
               newBallX = ball.x;
-              ball.velX = -ball.velX/3;
+              ball.velX = -ball.velX/2.5;
             }
           }
 
           if (currentCellY !== nextCellY) {
             if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
               newBallY = currentCellY + 1 - ballSize / cellSize;
-              ball.velY = -ball.velY/3;
+              ball.velY = -ball.velY/2.5;
             } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
               newBallY = currentCellY + ballSize / cellSize;
-              ball.velY = -ball.velY/3;
+              ball.velY = -ball.velY/2.5;
             } else if (newBallX % 1 > 0.8 || newBallX % 1 < 0.2) {
               newBallY = ball.y;
-              ball.velY = -ball.velY/3;
+              ball.velY = -ball.velY2.5;
             }
           }
 
