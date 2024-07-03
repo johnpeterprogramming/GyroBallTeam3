@@ -12,14 +12,10 @@
     }
     #mazeCanvas {
       border: 1px solid black;
-      transform: preserve-3d;
       display: none;
     }
     #leaderboard {
       margin-top: 20px;
-    }
-    #body {
-      perspective: 1000px;
     }
   </style>
 </head>
@@ -44,7 +40,7 @@
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
-    const maxSpeed = 0.25;
+    const maxSpeed = 0.1;
     const friction = 0.95;
     const leaderboardList = document.getElementById('leaderboardList');
     let balls = [];
@@ -67,7 +63,6 @@
         updateLeaderboard(data.leaderboard);
       } else {
         avgGyro = data;
-        canvas.style.transform = `rotateY(${data.gamma/2}deg) rotateX(${-data.beta/2}deg)`;
       }
     };
 
@@ -253,7 +248,7 @@
         ball.x = newBallX;
         ball.y = newBallY;
 
-        if (Math.hypot(newBallX - 10, newBallY - 10) < ballSize / cellSize) {
+        if (Math.floor(ballX) === Math.floor(cols/2) && Math.floor(ballY) === Math.floor(rows/2)) {
           socket.send(JSON.stringify({ type: 'reachedCenter' }));
         }
       }

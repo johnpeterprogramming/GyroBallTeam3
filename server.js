@@ -130,7 +130,7 @@ function handlePlayerReachedCenter(playerId) {
   }
 }
 
-setInterval(broadcastAvgGyroData, 100);
+setInterval(broadcastAvgGyroData, 50);
 
 app.use(express.static('public'));
 
