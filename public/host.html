@@ -53,8 +53,8 @@
     let leaderboard = [];
     let numFinished = 0;
 
-    // const socket = new WebSocket('wss://gyroballteam3.onrender.com');
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    // const socket = new WebSocket('ws://localhost:8080');
     
 
     socket.onmessage = (event) => {
@@ -224,7 +224,7 @@
     function updateBallPosition() {
       for (let ball of balls) {
         if (!ball.finished) {
-          ball.velY = Math.max(Math.min(avgGyro.beta / 90 * maxSpeed, maxSpeed), -maxSpeed);
+          ball.velY = Math.max(Math.min(avgGyro.beta / 180 * maxSpeed, maxSpeed), -maxSpeed);
           ball.velX = Math.max(Math.min(avgGyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
 
           let newBallX = ball.x + ball.velX;
