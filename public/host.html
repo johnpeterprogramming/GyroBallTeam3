@@ -290,7 +290,7 @@
     function updateLeaderboard(leaderboard, ball) {
         numFinished += 1;
         const listItem = document.createElement('li');
-        // listItem.style.color = 'white';
+        listItem.style.color = 'white';
         listItem.textContent = `Player ${ball.color}`;
         leaderboardList.appendChild(listItem);
         if (numFinished === balls.length-1) {
