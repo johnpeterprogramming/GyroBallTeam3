@@ -49,8 +49,8 @@
     let leaderboard = [];
     let numFinished = 0;
 
-    //const socket = new WebSocket('wss://gyroballteam3.onrender.com');
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    //const socket = new WebSocket('ws://localhost:8080');
     
 
     socket.onmessage = (event) => {
@@ -104,7 +104,8 @@
         playerID: player.id,
         velX: 0,
         velY: 0,
-        color: player.color
+        color: player.color,
+        finished: false
 
       }));
     }
@@ -202,66 +203,72 @@
       }
 
       for (let ball of balls) {
-        ctx.fillStyle = ball.color;
-        ctx.beginPath();
-        ctx.arc(ball.x * cellSize, ball.y * cellSize, ballSize, 0, Math.PI * 2);
-        ctx.fill();
+        if (!ball.finished) {
+          ctx.fillStyle = ball.color;
+          ctx.beginPath();
+          ctx.arc(ball.x * cellSize, ball.y * cellSize, ballSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
     }
 
     function updateBallPosition() {
       for (let ball of balls) {
-        ball.velY = Math.max(Math.min(avgGyro.beta / 90 * maxSpeed, maxSpeed), -maxSpeed);
-        ball.velX = Math.max(Math.min(avgGyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
+        if (!ball.finished) {
+          ball.velY = Math.max(Math.min(avgGyro.beta / 90 * maxSpeed, maxSpeed), -maxSpeed);
+          ball.velX = Math.max(Math.min(avgGyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
 
-        let newBallX = ball.x + ball.velX;
-        let newBallY = ball.y + ball.velY;
+          let newBallX = ball.x + ball.velX;
+          let newBallY = ball.y + ball.velY;
 
-        let x = ball.velX > 0 ? ballSize / cellSize : -ballSize / cellSize;
-        let y = ball.velY > 0 ? ballSize / cellSize : -ballSize / cellSize;
+          let x = ball.velX > 0 ? ballSize / cellSize : -ballSize / cellSize;
+          let y = ball.velY > 0 ? ballSize / cellSize : -ballSize / cellSize;
 
-        let currentCellX = Math.floor(ball.x);
-        let currentCellY = Math.floor(ball.y);
-        let nextCellX = Math.floor(newBallX + x);
-        let nextCellY = Math.floor(newBallY + y);
+          let currentCellX = Math.floor(ball.x);
+          let currentCellY = Math.floor(ball.y);
+          let nextCellX = Math.floor(newBallX + x);
+          let nextCellY = Math.floor(newBallY + y);
 
-        if (currentCellX !== nextCellX) {
-          if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
-            newBallX = currentCellX + 1 - ballSize / cellSize;
-            ball.velX = -ball.velX/3;
-          } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
-            newBallX = currentCellX + ballSize / cellSize;
-            ball.velX = -ball.velX/3;
-          } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
-            newBallX = ball.x;
-            ball.velX = -ball.velX/3;
-          }
-        }
-
-        if (currentCellY !== nextCellY) {
-          if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
-            newBallY = currentCellY + 1 - ballSize / cellSize;
-            ball.velY = -ball.velX/3;
-          } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
-            newBallY = currentCellY + ballSize / cellSize;
-            ball.velY = -ball.velX/3;
-          } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
-            newBallY = ball.y;
-            ball.velY = -ball.velY/3;
-          }
-        }
-
-        ball.x = newBallX;
-        ball.y = newBallY;
-
-          if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
-          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
-            if (!leaderboard.includes(ball.id)) {
-              leaderboard.push(ball.id);
-              updateLeaderboard(leaderboard, ball);
+          if (currentCellX !== nextCellX) {
+            if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
+              newBallX = currentCellX + 1 - ballSize / cellSize;
+              ball.velX = -ball.velX/3;
+            } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
+              newBallX = currentCellX + ballSize / cellSize;
+              ball.velX = -ball.velX/3;
+            } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
+              newBallX = ball.x;
+              ball.velX = -ball.velX/3;
             }
           }
+
+          if (currentCellY !== nextCellY) {
+            if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
+              newBallY = currentCellY + 1 - ballSize / cellSize;
+              ball.velY = -ball.velX/3;
+            } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
+              newBallY = currentCellY + ballSize / cellSize;
+              ball.velY = -ball.velX/3;
+            } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
+              newBallY = ball.y;
+              ball.velY = -ball.velY/3;
+            }
+          }
+
+          ball.x = newBallX;
+          ball.y = newBallY;
+
+            if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
+            //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+              if (!leaderboard.includes(ball.id)) {
+                ball.finished = true;
+                leaderboard.push(ball.id);
+                updateLeaderboard(leaderboard, ball);
+              }
+            }
+        }
       }
+      
 
       drawMaze(maze);
     }
@@ -271,6 +278,9 @@
         const listItem = document.createElement('li');
         listItem.textContent = `Player ${ball.color}`;
         leaderboardList.appendChild(listItem);
+        if (numFinished === balls.length-1) {
+          alert("Game over")
+        }
     }
 
     function gameLoop() {
