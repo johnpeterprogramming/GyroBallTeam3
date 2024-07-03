@@ -19,7 +19,7 @@
   </div>
       
 	   
-    <canvas id="mazeCanvas" width="416" height="416"></canvas>
+    <canvas id="mazeCanvas" width="418" height="418"></canvas>
         
     <div id="leaderboard">
       <h2 class="heading">Leaderboard</h2>
@@ -32,7 +32,7 @@
     const startButton = document.getElementById('startButton');
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const cellSize = 32;
+    const cellSize = 22;
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
@@ -194,7 +194,7 @@
       // Highlight the central tile
       const centerX = Math.floor(rows / 2) * cellSize;
       const centerY = Math.floor(cols / 2) * cellSize;
-      ctx.fillStyle = 'lightgreen';
+      ctx.fillStyle = 'magenta';
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 3;
       ctx.fillRect(centerX, centerY, cellSize, cellSize);
