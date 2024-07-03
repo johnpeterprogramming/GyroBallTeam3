@@ -109,8 +109,8 @@
 
     function gameOver() {
       canvas.style.display = 'none';
-      leaderboardDiv.style.fontSize = '24px';
-      leaderboardDiv.style.fontSize = '18px';
+      leaderboardDiv.style.fontSize = '46px';
+      leaderboardDiv.style.fontSize = '26px';
     }
 
     function initializeBalls(players) {
@@ -237,6 +237,10 @@
 
           ball.velY += 0.03 * gyro.beta / 180 * maxSpeed;
           ball.velX += 0.03 * gyro.gamma / 90 * maxSpeed;
+
+          ball.velX = 0.99* ball.velX;
+          ball.velY = 0.99* ball.velY;
+
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
