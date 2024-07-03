@@ -233,8 +233,8 @@
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
 
-          ball.velY += 0.007 * gyro.beta / 180 * maxSpeed;
-          ball.velX += 0.007 * gyro.gamma / 90 * maxSpeed;
+          ball.velY += 0.015 * gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.015 * gyro.gamma / 90 * maxSpeed;
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
