@@ -25,11 +25,6 @@
       <h2>Leaderboard</h2>
       <ol id="leaderboardList"></ol>
     </div>
-    
-		
-		
-		<!-- <div class=lobbyName>Lobby Code:</div>
-    </div> -->
 
   <script>
     const lobby = document.getElementById('lobby');
@@ -98,7 +93,10 @@
       lobby.style.display = 'none';
       canvas.style.display = 'block';
       leaderboardDiv.style.display = 'block';
+<<<<<<< HEAD
 
+=======
+>>>>>>> temp_leaderboard_fix
       drawMaze(maze);
       gameLoop();
     }
@@ -106,8 +104,12 @@
     function stopGame() {
       lobby.style.display = 'flex';
       canvas.style.display = 'none';
+<<<<<<< HEAD
       leaderboardDiv.style.display = 'block';
 
+=======
+      leaderboardDiv.style.display = 'none';
+>>>>>>> temp_leaderboard_fix
       playerCountElem.textContent = 'Players connected: 0';
     }
 
