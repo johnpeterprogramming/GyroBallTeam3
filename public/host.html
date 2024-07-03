@@ -15,7 +15,7 @@
     <h2 id="playerCount" class="heading">Players connected: 0</h2>
     <div class="outset" id="outset">
     </div>
-    <div id="startButton" class="button2" disabled><a href="javascript:void(0);">START</a></div>
+    <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
       
 	   
@@ -62,7 +62,11 @@
         }
         player_list_div.innerHTML = player_list_html; 
         playerCountElem.textContent = `Players connected: ${data.count}`;
-        startButton.disabled = data.count < 2 || data.count > 4;
+        if (data.count < 2 || data.count > 4)
+          startButton.classList.add('disabled');
+        else
+          startButton.classList.remove('disabled');
+
       } else if (data.type === 'start') {
         initializeBalls(data.players);
         startGame();
@@ -93,10 +97,6 @@
       lobby.style.display = 'none';
       canvas.style.display = 'block';
       leaderboardDiv.style.display = 'block';
-<<<<<<< HEAD
-
-=======
->>>>>>> temp_leaderboard_fix
       drawMaze(maze);
       gameLoop();
     }
@@ -104,12 +104,7 @@
     function stopGame() {
       lobby.style.display = 'flex';
       canvas.style.display = 'none';
-<<<<<<< HEAD
-      leaderboardDiv.style.display = 'block';
-
-=======
       leaderboardDiv.style.display = 'none';
->>>>>>> temp_leaderboard_fix
       playerCountElem.textContent = 'Players connected: 0';
     }
 
@@ -275,7 +270,7 @@
           ball.y = newBallY;
 
           if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
-          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+          // if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
 
             ball.finished = true;
             leaderboard.push(ball.id);

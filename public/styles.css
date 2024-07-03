@@ -199,6 +199,12 @@ div.outset {
 #leaderboard {
     display:none;
 }
+
 #mazeCanvas {
     display: none;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
