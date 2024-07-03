@@ -18,7 +18,7 @@
     <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
 
-    <canvas id="mazeCanvas" width="646" height="646"></canvas>
+    <canvas id="mazeCanvas" width="442" height="442"></canvas>
         
     <div id="leaderboard">
       <h2 class="heading">Leaderboard</h2>
@@ -31,7 +31,7 @@
     const startButton = document.getElementById('startButton');
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const cellSize = 38;
+    const cellSize = 26;
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
