@@ -62,7 +62,7 @@ wss.on('connection', (socket) => {
     const data = JSON.parse(message);
     if (clients[id]) {
       clients[id].gyroData = data;
-      console.log(data.type);
+      // console.log(data.type);
       if (data.type === 'reachedCenter') {
         handlePlayerReachedCenter(data.playerID);
       }
@@ -117,23 +117,18 @@ function startGame() {
   host.send(JSON.stringify({ type: 'start', players }));
 }
 
-function broadcastAvgGyroData() {
+function broadcastGyroData() {
   if (!host || !gameStarted) return;
 
-  const avgGyro = { beta: 0, gamma: 0 };
-  const clientCount = Object.keys(clients).length;
-
   for (let id in clients) {
-    avgGyro.beta += clients[id].gyroData.beta;
-    avgGyro.gamma += clients[id].gyroData.gamma;
-  }
+    const playerGyro = {
+      id: id,
+      beta: clients[id].gyroData.beta,
+      gamma: clients[id].gyroData.gamma
+    };
 
-  if (clientCount > 0) {
-    avgGyro.beta /= clientCount;
-    avgGyro.gamma /= clientCount;
+    host.send(JSON.stringify(playerGyro));
   }
-
-  host.send(JSON.stringify(avgGyro));
 }
 
 // function handlePlayerReachedCenter(playerId) {
@@ -149,7 +144,7 @@ function broadcastAvgGyroData() {
 
 // }
 
-setInterval(broadcastAvgGyroData, 50);
+setInterval(broadcastGyroData, 50);
 
 app.use(express.static('public'));
 

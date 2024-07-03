@@ -18,7 +18,6 @@
     <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
       
-	   
     <canvas id="mazeCanvas" width="400" height="400"></canvas>
         
     <div id="leaderboard">
@@ -45,14 +44,13 @@
 
     let balls = [];
     let maze = createMaze(rows, cols);
-    let avgGyro = { beta: 0, gamma: 0 };
+    let gyroData = {};
     let leaderboard = [];
     let numFinished = 0;
 
     const socket = new WebSocket('wss://gyroballteam3.onrender.com');
     // const socket = new WebSocket('ws://localhost:8080');
     
-
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'clientCount') {
@@ -75,7 +73,7 @@
       } else if (data.type === 'updateLeaderboard') {
         updateLeaderboard(data.leaderboard);
       } else {
-        avgGyro = data;
+        gyroData[data.id] = { beta: data.beta, gamma: data.gamma };
       }
     };
 
@@ -117,7 +115,6 @@
         velY: 0,
         color: player.color,
         finished: false
-
       }));
     }
 
@@ -225,9 +222,10 @@
 
     function updateBallPosition() {
       for (let ball of balls) {
-        if (!ball.finished) {
-          ball.velY = Math.max(Math.min(avgGyro.beta / 180 * maxSpeed, maxSpeed), -maxSpeed);
-          ball.velX = Math.max(Math.min(avgGyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
+        if (!ball.finished && gyroData[ball.playerID]) {
+          const gyro = gyroData[ball.playerID];
+          ball.velY = Math.max(Math.min(gyro.beta / 180 * maxSpeed, maxSpeed), -maxSpeed);
+          ball.velX = Math.max(Math.min(gyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
 
           let newBallX = ball.x + ball.velX;
           let newBallY = ball.y + ball.velY;
@@ -243,41 +241,37 @@
           if (currentCellX !== nextCellX) {
             if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
               newBallX = currentCellX + 1 - ballSize / cellSize;
-              ball.velX = -ball.velX/3;
+              ball.velX = -ball.velX / 3;
             } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
               newBallX = currentCellX + ballSize / cellSize;
-              ball.velX = -ball.velX/3;
-            } else if (newBallY%1 > 0.8 || newBallY%1 < 0.2) {
+              ball.velX = -ball.velX / 3;
+            } else if (newBallY % 1 > 0.8 || newBallY % 1 < 0.2) {
               newBallX = ball.x;
-              ball.velX = -ball.velX/3;
+              ball.velX = -ball.velX / 3;
             }
           }
 
           if (currentCellY !== nextCellY) {
             if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
               newBallY = currentCellY + 1 - ballSize / cellSize;
-              ball.velY = -ball.velX/3;
+              ball.velY = -ball.velX / 3;
             } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
               newBallY = currentCellY + ballSize / cellSize;
-              ball.velY = -ball.velX/3;
-            } else if (newBallX%1 > 0.8 || newBallX%1 < 0.2) {
+              ball.velY = -ball.velX / 3;
+            } else if (newBallX % 1 > 0.8 || newBallX % 1 < 0.2) {
               newBallY = ball.y;
-              ball.velY = -ball.velY/3;
+              ball.velY = -ball.velY / 3;
             }
           }
 
           ball.x = newBallX;
           ball.y = newBallY;
 
-          if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
-          // if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
-
+          if (Math.floor(ball.x) === Math.floor(cols / 2) && Math.floor(ball.y) === Math.floor(rows / 2)) {
             ball.finished = true;
-            leaderboard.push(ball.id);
+            leaderboard.push(ball.playerID);
             updateLeaderboard(leaderboard, ball);
-
           }
-
         }
       }
 
@@ -285,13 +279,13 @@
     }
 
     function updateLeaderboard(leaderboard, ball) {
-        numFinished += 1;
-        const listItem = document.createElement('li');
-        listItem.textContent = `Player ${ball.color}`;
-        leaderboardList.appendChild(listItem);
-        if (numFinished === balls.length-1) {
-          alert("Game over")
-        }
+      numFinished += 1;
+      const listItem = document.createElement('li');
+      listItem.textContent = `Player ${ball.color}`;
+      leaderboardList.appendChild(listItem);
+      if (numFinished === balls.length - 1) {
+        alert("Game over");
+      }
     }
 
     function gameLoop() {
