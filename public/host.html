@@ -3,33 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="styles.css">
+
   <title>Maze Host</title>
-  <style>
-    #lobby {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #mazeCanvas {
-      border: 1px solid black;
-      display: none;
-    }
-    #leaderboard {
-      margin-top: 20px;
-    }
-  </style>
 </head>
 <body>
-  <div id="lobby">
-    <h1>Waiting for players...</h1>
-    <p id="playerCount">Players connected: 0</p>
-    <button id="startButton" disabled>Start Game</button>
+
+  <div class="content" id="lobby">
+    <h1 class="heading">Waiting for players...</h1>
+    <h2 id="playerCount" class="heading">Players connected: 0</h2>
+    <div class="outset" id="outset">
+    </div>
+    <div id="startButton" class="button2" disabled><a href="javascript:void(0);">START</a></div>
   </div>
-  <canvas id="mazeCanvas" width="400" height="400"></canvas>
-  <div id="leaderboard">
-    <h2>Leaderboard</h2>
-    <ol id="leaderboardList"></ol>
-  </div>
+      
+	   
+    <canvas id="mazeCanvas" width="400" height="400"></canvas>
+        
+    <div id="leaderboard">
+      <h2>Leaderboard</h2>
+      <ol id="leaderboardList"></ol>
+    </div>
+    
+		
+		
+		<div class=lobbyName>Lobby Code:</div>
+    </div>
+
   <script>
     const lobby = document.getElementById('lobby');
     const playerCountElem = document.getElementById('playerCount');
@@ -43,15 +44,23 @@
     const maxSpeed = 0.25;
     const friction = 0.95;
     const leaderboardList = document.getElementById('leaderboardList');
+
+    let player_list_div = document.getElementById("outset");
+
     let balls = [];
     let maze = createMaze(rows, cols);
     let avgGyro = { beta: 0, gamma: 0 };
 
-    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    const socket = new WebSocket('ws://localhost:8080');
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'clientCount') {
+        let player_list_html = '';
+        for (let i=1; i<data.count+1; i++) {
+          player_list_html += `<p class="player">Player ${i}</p>`;
+        }
+        player_list_div.innerHTML = player_list_html; 
         playerCountElem.textContent = `Players connected: ${data.count}`;
         startButton.disabled = data.count < 2 || data.count > 4;
       } else if (data.type === 'start') {
