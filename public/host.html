@@ -46,8 +46,12 @@
     let balls = [];
     let maze = createMaze(rows, cols);
     let avgGyro = { beta: 0, gamma: 0 };
+    let leaderboard = [];
+    let numFinished = 0;
 
-    const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    //const socket = new WebSocket('wss://gyroballteam3.onrender.com');
+    const socket = new WebSocket('ws://localhost:8080');
+    
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -97,9 +101,11 @@
       balls = players.map(player => ({
         x: player.position.x,
         y: player.position.y,
+        playerID: player.id,
         velX: 0,
         velY: 0,
         color: player.color
+
       }));
     }
 
@@ -248,22 +254,23 @@
         ball.x = newBallX;
         ball.y = newBallY;
 
-        if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
-          alert("SUS");
-          socket.send(JSON.stringify({ type: 'reachedCenter' }));
-        }
+          if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
+          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+            if (!leaderboard.includes(ball.id)) {
+              leaderboard.push(ball.id);
+              updateLeaderboard(leaderboard, ball);
+            }
+          }
       }
 
       drawMaze(maze);
     }
 
-    function updateLeaderboard(leaderboard) {
-      leaderboardList.innerHTML = '';
-      leaderboard.forEach(player => {
+    function updateLeaderboard(leaderboard, ball) {
+        numFinished += 1;
         const listItem = document.createElement('li');
-        listItem.textContent = `Player ${player.number} (${player.color})`;
+        listItem.textContent = `Player ${ball.color}`;
         leaderboardList.appendChild(listItem);
-      });
     }
 
     function gameLoop() {

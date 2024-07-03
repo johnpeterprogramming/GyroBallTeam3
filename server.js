@@ -62,8 +62,9 @@ wss.on('connection', (socket) => {
     const data = JSON.parse(message);
     if (clients[id]) {
       clients[id].gyroData = data;
+      console.log(data.type);
       if (data.type === 'reachedCenter') {
-        handlePlayerReachedCenter(id);
+        handlePlayerReachedCenter(data.playerID);
       }
     } else if (data.type === 'startGame') {
       gameStarted = true;
@@ -93,10 +94,26 @@ wss.on('connection', (socket) => {
   sendClientCount();
 });
 
+// function startGame() {
+//   if (!host) return;
+//   leaderboard = [];
+  
+//   const players = Object.values(clients).map(client => client.playerData);
+//   console.log(players)
+//   host.send(JSON.stringify({ type: 'start', players }));
+// }
+
 function startGame() {
   if (!host) return;
   leaderboard = [];
-  const players = Object.values(clients).map(client => client.playerData);
+  
+  const players = Object.entries(clients).map(([id, client]) => ({
+    id,
+    ...client.playerData
+  }));
+
+  console.log(players)
+
   host.send(JSON.stringify({ type: 'start', players }));
 }
 
@@ -120,6 +137,7 @@ function broadcastAvgGyroData() {
 }
 
 function handlePlayerReachedCenter(playerId) {
+  console.log(playerId);
   if (!leaderboard.includes(playerId)) {
     leaderboard.push(playerId);
     const playerData = clients[playerId].playerData;
@@ -128,6 +146,7 @@ function handlePlayerReachedCenter(playerId) {
       leaderboard: leaderboard.map(id => clients[id].playerData)
     }));
   }
+
 }
 
 setInterval(broadcastAvgGyroData, 50);
@@ -135,7 +154,7 @@ setInterval(broadcastAvgGyroData, 50);
 app.use(express.static('public'));
 
 // start server
-const PORT = 80;
+const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
