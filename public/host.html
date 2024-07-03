@@ -17,9 +17,9 @@
     </div>
     <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
-      
-	   
-    <canvas id="mazeCanvas" width="418" height="418"></canvas>
+
+
+    <canvas id="mazeCanvas" width="646" height="646"></canvas>
         
     <div id="leaderboard">
       <h2 class="heading">Leaderboard</h2>
@@ -32,12 +32,11 @@
     const startButton = document.getElementById('startButton');
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const cellSize = 22;
+    const cellSize = 38;
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
-    const maxSpeed = 0.1;
-    const friction = 0.95;
+    const maxSpeed = 0.03;
     const leaderboardList = document.getElementById('leaderboardList');
     const leaderboardDiv = document.getElementById('leaderboard');
 
@@ -50,7 +49,7 @@
     let numFinished = 0;
 
     const socket = new WebSocket('wss://gyroballteam3.onrender.com');
-    // const socket = new WebSocket('ws://localhost:8080');
+    //const socket = new WebSocket('ws://localhost:8080');
     
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -106,6 +105,10 @@
       canvas.style.display = 'none';
       leaderboardDiv.style.display = 'none';
       playerCountElem.textContent = 'Players connected: 0';
+    }
+
+    function gameOver() {
+      canvas.style.display = 'none';
     }
 
     function initializeBalls(players) {
@@ -199,6 +202,15 @@
       ctx.lineWidth = 3;
       ctx.fillRect(centerX, centerY, cellSize, cellSize);
 
+      for (let ball of balls) {
+        if (!ball.finished) {
+          ctx.fillStyle = ball.color;
+          ctx.beginPath();
+          ctx.arc(ball.x * cellSize, ball.y * cellSize, ballSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
       for (let x = 0; x < rows; x++) {
         for (let y = 0; y < cols; y++) {
           let cell = maze[x][y];
@@ -214,22 +226,18 @@
         }
       }
 
-      for (let ball of balls) {
-        if (!ball.finished) {
-          ctx.fillStyle = ball.color;
-          ctx.beginPath();
-          ctx.arc(ball.x * cellSize, ball.y * cellSize, ballSize, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
     }
 
     function updateBallPosition() {
       for (let ball of balls) {
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
-          ball.velY = Math.max(Math.min(gyro.beta / 180 * maxSpeed, maxSpeed), -maxSpeed);
-          ball.velX = Math.max(Math.min(gyro.gamma / 90 * maxSpeed, maxSpeed), -maxSpeed);
+
+          ball.velY += 0.007 * gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.007 * gyro.gamma / 90 * maxSpeed;
+
+          ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
+          ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
 
           let newBallX = ball.x + ball.velX;
           let newBallY = ball.y + ball.velY;
@@ -245,26 +253,26 @@
           if (currentCellX !== nextCellX) {
             if (ball.velX > 0 && maze[currentCellY][currentCellX].east) {
               newBallX = currentCellX + 1 - ballSize / cellSize;
-              ball.velX = -ball.velX / 3;
+              ball.velX = -ball.velX/3;
             } else if (ball.velX < 0 && maze[currentCellY][currentCellX].west) {
               newBallX = currentCellX + ballSize / cellSize;
-              ball.velX = -ball.velX / 3;
+              ball.velX = -ball.velX/3;
             } else if (newBallY % 1 > 0.8 || newBallY % 1 < 0.2) {
               newBallX = ball.x;
-              ball.velX = -ball.velX / 3;
+              ball.velX = -ball.velX/3;
             }
           }
 
           if (currentCellY !== nextCellY) {
             if (ball.velY > 0 && maze[currentCellY][currentCellX].south) {
               newBallY = currentCellY + 1 - ballSize / cellSize;
-              ball.velY = -ball.velX / 3;
+              ball.velY = -ball.velY/3;
             } else if (ball.velY < 0 && maze[currentCellY][currentCellX].north) {
               newBallY = currentCellY + ballSize / cellSize;
-              ball.velY = -ball.velX / 3;
+              ball.velY = -ball.velY/3;
             } else if (newBallX % 1 > 0.8 || newBallX % 1 < 0.2) {
               newBallY = ball.y;
-              ball.velY = -ball.velY / 3;
+              ball.velY = -ball.velY/3;
             }
           }
 
@@ -272,6 +280,7 @@
           ball.y = newBallY;
 
           if (Math.floor(ball.x) === Math.floor(cols / 2) && Math.floor(ball.y) === Math.floor(rows / 2)) {
+            //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
             ball.finished = true;
             leaderboard.push(ball.playerID);
             updateLeaderboard(leaderboard, ball);
@@ -289,7 +298,16 @@
         listItem.textContent = `Player ${ball.color}`;
         leaderboardList.appendChild(listItem);
         if (numFinished === balls.length-1) {
-          alert("Game over")
+          for (let ball of balls) {
+            if (!ball.finished) {
+              ball.finished = true;
+              const listItem = document.createElement('li');
+              listItem.style.color = 'white';
+              listItem.textContent = `Player ${ball.color}`;
+              leaderboardList.appendChild(listItem);
+            }
+          }
+          gameOver();
         }
     }
 

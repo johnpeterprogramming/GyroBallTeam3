@@ -14,9 +14,9 @@ let gameStarted = false;
 const playerColors = ['red', 'blue', 'green', 'yellow'];
 const ballPositions = [
   { x: 0.5, y: 0.5 },
-  { x: 12.5, y: 0.5 },
-  { x: 0.5, y: 12.5 },
-  { x: 12.5, y: 12.5 }
+  { x: 16.5, y: 0.5 },
+  { x: 0.5, y: 16.5 },
+  { x: 16.5, y: 16.5 }
 ];
 
 function sendClientCount() {
@@ -30,7 +30,7 @@ function assignPlayerData(clientId) {
   clients[clientId].playerData = {
     number: playerIndex + 1,
     color: playerColors[playerIndex],
-    position: ballPositions[playerIndex]
+    position: ballPositions[playerIndex] 
   };
   clients[clientId].socket.send(JSON.stringify({
     type: 'playerData',
@@ -62,7 +62,6 @@ wss.on('connection', (socket) => {
     const data = JSON.parse(message);
     if (clients[id]) {
       clients[id].gyroData = data;
-      // console.log(data.type);
       if (data.type === 'reachedCenter') {
         handlePlayerReachedCenter(data.playerID);
       }
@@ -94,15 +93,6 @@ wss.on('connection', (socket) => {
   sendClientCount();
 });
 
-// function startGame() {
-//   if (!host) return;
-//   leaderboard = [];
-  
-//   const players = Object.values(clients).map(client => client.playerData);
-//   console.log(players)
-//   host.send(JSON.stringify({ type: 'start', players }));
-// }
-
 function startGame() {
   if (!host) return;
   //leaderboard = [];
@@ -111,8 +101,6 @@ function startGame() {
     id,
     ...client.playerData
   }));
-
-  console.log(players)
 
   host.send(JSON.stringify({ type: 'start', players }));
 }
@@ -130,19 +118,6 @@ function broadcastGyroData() {
     host.send(JSON.stringify(playerGyro));
   }
 }
-
-// function handlePlayerReachedCenter(playerId) {
-//   console.log(playerId);
-//   if (!leaderboard.includes(playerId)) {
-//     leaderboard.push(playerId);
-//     const playerData = clients[playerId].playerData;
-//     host.send(JSON.stringify({
-//       type: 'updateLeaderboard',
-//       leaderboard: leaderboard.map(id => clients[id].playerData)
-//     }));
-//   }
-
-// }
 
 setInterval(broadcastGyroData, 50);
 
