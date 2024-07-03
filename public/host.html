@@ -35,7 +35,7 @@
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
-    const maxSpeed = 0.04;
+    const maxSpeed = 0.05;
     const leaderboardList = document.getElementById('leaderboardList');
     const leaderboardDiv = document.getElementById('leaderboard');
 
@@ -108,8 +108,8 @@
 
     function gameOver() {
       canvas.style.display = 'none';
-      leaderboardDiv.style.fontSize = '36px';
-      leaderboardList.style.fontSize = '22px';
+      leaderboardDiv.style.fontSize = '40px';
+      leaderboardList.style.fontSize = '24px';
     }
 
     function initializeBalls(players) {
@@ -234,12 +234,11 @@
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
 
-          ball.velY += 0.03 * gyro.beta / 180 * maxSpeed;
-          ball.velX += 0.03 * gyro.gamma / 90 * maxSpeed;
+          ball.velY += 0.035 * gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.035 * gyro.gamma / 90 * maxSpeed;
 
-          ball.velX = 0.98* ball.velX;
-          ball.velY = 0.98* ball.velY;
-
+          ball.velX = 0.97* ball.velX;
+          ball.velY = 0.97* ball.velY;
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
@@ -285,7 +284,7 @@
           ball.y = newBallY;
 
           if (Math.floor(ball.x) === Math.floor(cols / 2) && Math.floor(ball.y) === Math.floor(rows / 2)) {
-            //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
             ball.finished = true;
             leaderboard.push(ball.playerID);
             updateLeaderboard(leaderboard, ball);
