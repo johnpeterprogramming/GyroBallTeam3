@@ -14,9 +14,9 @@ let gameStarted = false;
 const playerColors = ['red', 'blue', 'green', 'yellow'];
 const ballPositions = [
   { x: 0.5, y: 0.5 },
-  { x: 18.5, y: 0.5 },
-  { x: 0.5, y: 18.5 },
-  { x: 18.5, y: 18.5 }
+  { x: 12.5, y: 0.5 },
+  { x: 0.5, y: 12.5 },
+  { x: 12.5, y: 12.5 }
 ];
 
 function sendClientCount() {

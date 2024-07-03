@@ -18,10 +18,11 @@
     <div id="startButton" class="button2 disabled"><a href="javascript:void(0);">START</a></div>
   </div>
       
-    <canvas id="mazeCanvas" width="400" height="400"></canvas>
+	   
+    <canvas id="mazeCanvas" width="416" height="416"></canvas>
         
     <div id="leaderboard">
-      <h2>Leaderboard</h2>
+      <h2 class="heading">Leaderboard</h2>
       <ol id="leaderboardList"></ol>
     </div>
 
@@ -31,7 +32,7 @@
     const startButton = document.getElementById('startButton');
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const cellSize = 20;
+    const cellSize = 32;
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
@@ -95,6 +96,7 @@
       lobby.style.display = 'none';
       canvas.style.display = 'block';
       leaderboardDiv.style.display = 'block';
+      document.body.style.backgroundColor = '#0c1a31';
       drawMaze(maze);
       gameLoop();
     }
@@ -193,6 +195,8 @@
       const centerX = Math.floor(rows / 2) * cellSize;
       const centerY = Math.floor(cols / 2) * cellSize;
       ctx.fillStyle = 'lightgreen';
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3;
       ctx.fillRect(centerX, centerY, cellSize, cellSize);
 
       for (let x = 0; x < rows; x++) {
@@ -279,13 +283,14 @@
     }
 
     function updateLeaderboard(leaderboard, ball) {
-      numFinished += 1;
-      const listItem = document.createElement('li');
-      listItem.textContent = `Player ${ball.color}`;
-      leaderboardList.appendChild(listItem);
-      if (numFinished === balls.length - 1) {
-        alert("Game over");
-      }
+        numFinished += 1;
+        const listItem = document.createElement('li');
+        listItem.style.color = 'white';
+        listItem.textContent = `Player ${ball.color}`;
+        leaderboardList.appendChild(listItem);
+        if (numFinished === balls.length-1) {
+          alert("Game over")
+        }
     }
 
     function gameLoop() {
