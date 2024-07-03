@@ -28,8 +28,8 @@
     
 		
 		
-		<div class=lobbyName>Lobby Code:</div>
-    </div>
+		<!-- <div class=lobbyName>Lobby Code:</div>
+    </div> -->
 
   <script>
     const lobby = document.getElementById('lobby');
@@ -44,6 +44,7 @@
     const maxSpeed = 0.1;
     const friction = 0.95;
     const leaderboardList = document.getElementById('leaderboardList');
+    const leaderboardDiv = document.getElementById('leaderboard');
 
     let player_list_div = document.getElementById("outset");
 
@@ -96,6 +97,8 @@
     function startGame() {
       lobby.style.display = 'none';
       canvas.style.display = 'block';
+      leaderboardDiv.style.display = 'block';
+
       drawMaze(maze);
       gameLoop();
     }
@@ -103,6 +106,8 @@
     function stopGame() {
       lobby.style.display = 'flex';
       canvas.style.display = 'none';
+      leaderboardDiv.style.display = 'block';
+
       playerCountElem.textContent = 'Players connected: 0';
     }
 
