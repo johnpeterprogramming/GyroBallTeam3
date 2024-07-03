@@ -249,6 +249,7 @@
         ball.y = newBallY;
 
         if (Math.floor(ball.x) === Math.floor(cols/2) && Math.floor(ball.y) === Math.floor(rows/2)) {
+          alert("SUS");
           socket.send(JSON.stringify({ type: 'reachedCenter' }));
         }
       }
