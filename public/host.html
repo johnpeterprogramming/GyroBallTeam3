@@ -21,7 +21,7 @@
     <canvas id="mazeCanvas" width="442" height="442"></canvas>
           
     <div id="leaderboard">
-      <h2 class="heading">Leaderboard</h2>
+      <div class="heading">Leaderboard</div>
       <ol id="leaderboardList"></ol>
     </div>
 
@@ -48,7 +48,7 @@
     let numFinished = 0;
 
     const socket = new WebSocket('wss://gyroballteam3.onrender.com');
-    //const socket = new WebSocket('ws://localhost:8080');
+    // const socket = new WebSocket('ws://localhost:8080');
     
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -110,6 +110,7 @@
       canvas.style.display = 'none';
       leaderboardDiv.style.fontSize = '40px';
       leaderboardList.style.fontSize = '24px';
+      startConfetti();
     }
 
     function initializeBalls(players) {
@@ -280,8 +281,8 @@
           ball.x = newBallX;
           ball.y = newBallY;
 
-          if (Math.floor(ball.x) === Math.floor(cols / 2) && Math.floor(ball.y) === Math.floor(rows / 2)) {
-          //if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
+          // if (Math.floor(ball.x) === Math.floor(cols / 2) && Math.floor(ball.y) === Math.floor(rows / 2)) {
+          if (Math.floor(ball.x) === 0 && Math.floor(ball.y) === 0) {
             ball.finished = true;
             leaderboard.push(ball.playerID);
             updateLeaderboard(leaderboard, ball);
@@ -316,6 +317,45 @@
       updateBallPosition();
       requestAnimationFrame(gameLoop);
     }
+    function createConfetti() {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    confetti.style.left = `${Math.random() * 100}vw`;
+    confetti.style.top = `-${Math.random() * 20}px`; // Start slightly above the viewport
+    confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear`;
+    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(confetti);
+
+    setTimeout(() => {
+        confetti.remove();
+    }, 5000); // Confetti duration on screen
+}
+
+function startConfetti() {
+    let duration = 0;
+    const intervals = [
+        { time: 0, delay: 50 },
+        { time: 1000, delay: 100 },
+        { time: 3000, delay: 200 }
+    ];
+
+    intervals.forEach(interval => {
+        setTimeout(() => {
+            const intervalId = setInterval(() => {
+                createConfetti();
+                duration += interval.delay;
+                if (duration >= 5000) {
+                    clearInterval(intervalId);
+                }
+            }, interval.delay);
+        }, interval.time);
+    });
+
+    setTimeout(() => {
+        document.querySelectorAll('.confetti').forEach(conf => conf.remove());
+    }, 5000); // Stop creating confetti after 5 seconds
+}
   </script>
 </body>
 </html>
