@@ -8,6 +8,7 @@ body {
     height: 100vh;
     background-color: #f0f0f0;
 	position:relative;
+    overflow: hidden;
 }
 
 .content {
@@ -227,4 +228,8 @@ div.outset {
     background-color: #f00;
     opacity: 0.7;
     will-change: transform, opacity;
+}
+
+img {
+    max-width: 200px;
 }
