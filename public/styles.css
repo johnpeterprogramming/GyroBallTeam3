@@ -208,3 +208,23 @@ div.outset {
     pointer-events: none;
     opacity: 0.5;
 }
+
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(-100%) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100px) translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f00;
+    opacity: 0.7;
+    will-change: transform, opacity;
+}
