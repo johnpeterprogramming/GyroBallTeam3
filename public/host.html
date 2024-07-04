@@ -36,7 +36,7 @@
     const rows = canvas.width / cellSize;
     const cols = canvas.height / cellSize;
     const ballSize = cellSize / 4; // Radius of the ball
-    const maxSpeed = 0.045;
+    const maxSpeed = 0.035;
     const leaderboardList = document.getElementById('leaderboardList');
     const leaderboardDiv = document.getElementById('leaderboard');
 
@@ -236,8 +236,8 @@
         if (!ball.finished && gyroData[ball.playerID]) {
           const gyro = gyroData[ball.playerID];
 
-          ball.velY += 0.025* gyro.beta / 180 * maxSpeed;
-          ball.velX += 0.025 * gyro.gamma / 90 * maxSpeed;
+          ball.velY += 0.035* gyro.beta / 180 * maxSpeed;
+          ball.velX += 0.035 * gyro.gamma / 90 * maxSpeed;
 
           ball.velX = Math.max(Math.min(ball.velX, maxSpeed), -maxSpeed)
           ball.velY = Math.max(Math.min(ball.velY, maxSpeed), -maxSpeed)
